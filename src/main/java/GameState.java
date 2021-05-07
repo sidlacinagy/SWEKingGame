@@ -1,8 +1,9 @@
+import java.util.Objects;
+
 public class GameState {
     /**
      * Represents the GameState.
      */
-    private static GameState gameState=null;
     private int currentPlayer;
     private int moveIndex;
     private King whiteKing;
@@ -50,6 +51,14 @@ public class GameState {
         this.tiles = tiles;
     }
 
+    public void setGameState(GameState gameState){
+        this.setBlackKing(gameState.getBlackKing());
+        this.setCurrentPlayer(gameState.getCurrentPlayer());
+        this.setMoveIndex(gameState.getMoveIndex());
+        this.setTiles(gameState.getTiles());
+        this.setWhiteKing(gameState.getWhiteKing());
+    }
+
     /**
      * Creates a {@code GameState} object
      *
@@ -59,7 +68,7 @@ public class GameState {
      * @param blackKing the object that represents the black king
      * @param tiles the object that represents the tiles
      */
-    private GameState(int currentPlayer, int moveIndex, King whiteKing, King blackKing, Tiles tiles) {
+    public GameState(int currentPlayer, int moveIndex, King whiteKing, King blackKing, Tiles tiles) {
         this.currentPlayer = currentPlayer;
         this.whiteKing = whiteKing;
         this.blackKing = blackKing;
@@ -67,47 +76,50 @@ public class GameState {
         this.moveIndex = moveIndex;
     }
 
-    public static void createNewGame() {
-        gameState= new GameState(0, 0, new King(2, 0), new King(3, 7), Tiles.createEmptyTiles());
+    public static GameState createNewGame() {
+       return new GameState(0, 0, new King(2, 0), new King(3, 7), Tiles.createEmptyTiles());
     }
 
-    public static void loadGame(int currentPlayer, int moveIndex, King whiteKing, King blackKing, Tiles tiles){
+    public static GameState loadGame(int currentPlayer, int moveIndex, King whiteKing, King blackKing, Tiles tiles){
         if(isValidSaveGame(new GameState(currentPlayer,moveIndex,whiteKing,blackKing,tiles)))
         {
-        gameState=new GameState(currentPlayer,moveIndex,whiteKing,blackKing,tiles);
+        return new GameState(currentPlayer,moveIndex,whiteKing,blackKing,tiles);
         }
         else{
             System.out.println("Hibás fájl");
         }
+        return null;
     }
 
     @Override
     public String toString() {
         return "GameState{" +
                 "currentPlayer=" + currentPlayer +
+                ", moveIndex=" + moveIndex +
                 ", whiteKing=" + whiteKing +
                 ", blackKing=" + blackKing +
                 ", tiles=" + tiles +
                 '}';
     }
 
-//return -1 ha volt alkalmazott, 0 vagy 1 ha nyert valaki, -2 ha a lépés nem engedélyezett
+    /**
+     * @param position the position where the King will be moved or where the tile will be removed.
+     * @return returns -2 if the Operator could not be applied, -1 if was succesful, but the game not ended, 0 or 1 depending on who have won.
+     */
+
     public int applyOperator(Position position){
 
        if (isAppliable(position)){
-
             if(this.getMoveIndex()==0){
-
-                gameState=gameState.applyKingMove(position);
+                this.setGameState(applyKingMove(position));
                 //todo notify
-                if(isGoal(gameState)!=-1){
-                    return isGoal(gameState);
+                if(this.isGoal()!=-1){
+                    return this.isGoal();
                 }
             }
 
             else if(this.getMoveIndex()==1){
-
-                gameState=gameState.applyTileRemove(position);
+                this.setGameState(applyTileRemove(position));
                 //todo notify
             }
 
@@ -118,9 +130,23 @@ public class GameState {
 
     }
 
+    /**
+     * @param position the position where the king will be moved
+     * @return the new {@code GameState} object with the new locations
+     */
+
     public GameState applyKingMove(Position position){
-            return new GameState(this.getCurrentPlayer(),1,new King(position),this.getBlackKing(),this.getTiles());
+        if(this.getCurrentPlayer()==0){
+            return new GameState(this.getCurrentPlayer(),1,new King(position),this.getBlackKing(),this.getTiles());}
+        else if(this.getCurrentPlayer()==1){
+            return new GameState(this.getCurrentPlayer(),1, this.getWhiteKing(), new King(position),this.getTiles());}
+        return null;
     }
+
+    /**
+     * @param position the position where the tile will be removed
+     * @return the new {@code GameState} object with the new locations
+     */
 
     public GameState applyTileRemove(Position position){
         SquareStatus[][] tiles =this.getTiles().getTiles();
@@ -129,7 +155,10 @@ public class GameState {
         return new GameState((this.getCurrentPlayer()+1)%2,0,this.getWhiteKing(),this.getBlackKing(),new Tiles(tiles));
     }
 
-
+    /**
+     * @param goalPosition the position of the operator
+     * @return returns whether the given {@code Position} could be applied in the current {@code GameState}
+     */
 
     public boolean isAppliable(Position goalPosition){
 
@@ -146,19 +175,22 @@ public class GameState {
                return isKingMoveAppliable(currentKingPosition,goalPosition);
 
             }
-    //if the next move is removing a tile
             else if(this.getMoveIndex()==1){
-                    return isInPlayField(goalPosition) && isOccupied(goalPosition);
+                    return isInPlayField(goalPosition) && isEmpty(goalPosition);
             }
 
             return false;
 
     }
 
+    /**
+     * @param currentKingPosition the position of the king that will be moved
+     * @param goalPosition the position where the king will be moved
+     * @return returns whether the king could be moved to the given location
+     */
 
     public boolean isKingMoveAppliable(Position currentKingPosition,Position goalPosition){
-
-        return isInPlayField(goalPosition) && isNeighbour(currentKingPosition,goalPosition) && isOccupied(goalPosition);
+        return isInPlayField(goalPosition) && isNeighbour(currentKingPosition,goalPosition) && isEmpty(goalPosition);
 
     }
 
@@ -170,39 +202,56 @@ public class GameState {
 
     public boolean isNeighbour(Position currentKingPosition,Position goalPosition){
         for (Direction direction : Direction.values()) {
-            if(currentKingPosition.getTarget(direction)==goalPosition){
+            if(currentKingPosition.getTarget(direction).equals(goalPosition)){
                 return true;
             }
         }
         return false;
     }
 
-    public boolean isOccupied(Position goalPosition){
+    public boolean isEmpty(Position goalPosition){
         return !goalPosition.equals(this.getBlackKing().getPosition()) &&
                 !goalPosition.equals(this.getWhiteKing().getPosition()) &&
                 this.getTiles().getTiles()[goalPosition.row()][goalPosition.col()] != SquareStatus.REMOVED;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GameState gameState = (GameState) o;
+        return currentPlayer == gameState.currentPlayer &&
+                moveIndex == gameState.moveIndex &&
+                whiteKing.equals(gameState.whiteKing) &&
+                blackKing.equals(gameState.blackKing) &&
+                tiles.equals(gameState.tiles);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(currentPlayer, moveIndex, whiteKing, blackKing, tiles);
+    }
 
+    /**
+     * @return returns -1 if it is not a goal state, 0 or 1 depending on which player have won. 0 if white, 1 if black.
+     */
 
-
-    public int isGoal(GameState gameState){
+    public int isGoal(){
         King currentKing;
-        if(gameState.getCurrentPlayer()==0){
-           currentKing=gameState.getWhiteKing();
+        if(this.getCurrentPlayer()==0){
+           currentKing=this.getWhiteKing();
         }
         else{
-           currentKing=gameState.getBlackKing();
+           currentKing=this.getBlackKing();
         }
        for(Direction direction : Direction.values()){
            Position position=new Position(currentKing.getPosition().row()+direction.getRowChange(),
                    currentKing.getPosition().col()+direction.getColChange());
-           if(gameState.isAppliable(position)){
+           if(isAppliable(position)){
                return -1;
            }
        }
-       return (gameState.getCurrentPlayer()+1)%2;
+       return (this.getCurrentPlayer()+1)%2;
 
     }
 
