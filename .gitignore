@@ -198,3 +198,5 @@ modules.xml
 .idea/sonarlint
 
 */target/*
+target/*
+target/
