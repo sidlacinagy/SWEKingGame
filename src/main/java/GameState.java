@@ -59,13 +59,14 @@ public class GameState {
         this.tiles = tiles;
     }
 
-    public void setGameState(GameState gameState) {
-        this.setBlackKing(gameState.getBlackKing());
-        this.setCurrentPlayer(gameState.getCurrentPlayer());
-        this.setMoveIndex(gameState.getMoveIndex());
-        this.setTiles(gameState.getTiles());
-        this.setWhiteKing(gameState.getWhiteKing());
+    public void setTile(int row, int col, SquareStatus status){
+
+        this.tiles[row][col]=status;
+        //exception
+
     }
+
+
 
     /**
      * Creates a {@code GameState} object
@@ -88,13 +89,13 @@ public class GameState {
         return new GameState(STARTINGPLAYER, STARTINGMOVE, new King(WHITEKINGSTARTPOS), new King(BLACKKINGSTARTPOS), createEmptyTiles());
     }
 
-    public static GameState loadGame(int currentPlayer, int moveIndex, King whiteKing, King blackKing, SquareStatus[][] tiles) {
-        if (isValidSaveGame(new GameState(currentPlayer, moveIndex, whiteKing, blackKing, tiles))) {
+    public static GameState loadGame(int currentPlayer, int moveIndex, King whiteKing, King blackKing, SquareStatus[][] tiles)  {
+        GameState loadedGameState=new GameState(currentPlayer, moveIndex, whiteKing, blackKing, tiles);
+        if (loadedGameState.isValidGameState()) {
             return new GameState(currentPlayer, moveIndex, whiteKing, blackKing, tiles);
-        } else {
-            System.out.println("Hibás fájl");
         }
-        return null;
+        throw new IllegalArgumentException();
+
     }
 
     public static SquareStatus[][] createEmptyTiles() {
@@ -127,55 +128,59 @@ public class GameState {
 
     public int applyOperator(Position position) {
 
+
         if (isAppliable(position)) {
             if (this.getMoveIndex() == 0) {
-                this.setGameState(applyKingMove(position));
+                this.applyKingMove(position);
                 //todo notify
-                if (this.isGoal() != -1) {
-                    return this.isGoal();
-                }
+
             } else if (this.getMoveIndex() == 1) {
-                this.setGameState(applyTileRemove(position));
+                this.applyTileRemove(position);
                 //todo notify
             }
 
-            return -1;
-
+            if(this.isGoal()==-1) {
+                return -1;
+            }
         }
+
+        if(this.isGoal()!=-1){
+            return isGoal();
+        }
+
+
+
         return -2;
 
     }
 
     /**
      * @param position the position where the king will be moved
-     * @return the new {@code GameState} object with the new locations
+     * Sets the new {@code GameState} object with the new locations
      */
 
-    public GameState applyKingMove(Position position) {
+    public void applyKingMove(Position position) {
         if (this.getCurrentPlayer() == 0) {
             this.setMoveIndex(1);
             this.getWhiteKing().setPosition(position);
-            return this;
         } else if (this.getCurrentPlayer() == 1) {
             this.setMoveIndex(1);
             this.getBlackKing().setPosition(position);
-            return this;
         }
-        return null;
+
+        //todo exception
+
     }
 
     /**
      * @param position the position where the tile will be removed
-     * @return the new {@code GameState} object with the new locations
+     * Sets the new {@code GameState} object with the new tiles
      */
 
-    public GameState applyTileRemove(Position position) {
-        SquareStatus[][] tiles = this.getTiles();
-        tiles[position.row()][position.col()] = SquareStatus.REMOVED;
-        this.setTiles(tiles);
+    public void applyTileRemove(Position position) {
+        this.setTile(position.row(),position.col(),SquareStatus.REMOVED);
         this.setMoveIndex(0);
         this.setCurrentPlayer((this.getCurrentPlayer()+1)%2);
-        return this;
     }
 
     /**
@@ -201,7 +206,7 @@ public class GameState {
         else if (this.getMoveIndex() == 1) {
             return isInPlayField(goalPosition) && isEmpty(goalPosition);
         }
-
+        //todo exception
         return false;
 
     }
@@ -223,7 +228,7 @@ public class GameState {
                 goalPosition.col() >= 0 && goalPosition.col() < this.getTiles()[0].length;
     }
 
-    public boolean isNeighbour(Position currentKingPosition, Position goalPosition) {
+    public static boolean isNeighbour(Position currentKingPosition, Position goalPosition) {
         for (Direction direction : Direction.values()) {
             if (currentKingPosition.getTarget(direction).equals(goalPosition)) {
                 return true;
@@ -267,26 +272,71 @@ public class GameState {
      */
 
     public int isGoal() {
-        King currentKing;
-        if (this.getCurrentPlayer() == 0) {
-            currentKing = this.getWhiteKing();
-        } else {
-            currentKing = this.getBlackKing();
-        }
+        boolean whiteCanMove=false;
+        boolean blackCanMove=false;
         for (Direction direction : Direction.values()) {
-            Position position = new Position(currentKing.getPosition().row() + direction.getRowChange(),
-                    currentKing.getPosition().col() + direction.getColChange());
-            if (isAppliable(position)) {
-                return -1;
+            Position whitePosition = new Position(this.getWhiteKing().getPosition().row() + direction.getRowChange(),
+                    this.getWhiteKing().getPosition().col() + direction.getColChange());
+            if (isAppliable(whitePosition)) {
+                whiteCanMove=true;
+            }
+            Position blackPosition = new Position(this.getBlackKing().getPosition().row() + direction.getRowChange(),
+                    this.getBlackKing().getPosition().col() + direction.getColChange());
+            if (isAppliable(blackPosition)) {
+                blackCanMove=true;
             }
         }
-        return (this.getCurrentPlayer() + 1) % 2;
+
+        if(whiteCanMove && blackCanMove){
+            return -1;
+        }
+
+        if(!blackCanMove){
+            return 0;
+        }
+
+        if(!whiteCanMove){
+            return 1;
+        }
+
+        return 9999;
+
 
     }
 
-    public static boolean isValidSaveGame(GameState gameState) {
-        //todo
+    public boolean isValidGameState() {
+
+        if(countRemovedSquares(this.getTiles())%2!=this.getCurrentPlayer()){
+            return false;
+        }
+
+        //if either king is not in the playfield returns false
+        if(!this.isInPlayField(this.getBlackKing().getPosition())||!this.isInPlayField(this.getWhiteKing().getPosition())){
+            return false;
+        }
+        //if either king is on a removed square or if they are on the same square returns false
+        if(this.getTiles()[getBlackKing().getPosition().row()][getBlackKing().getPosition().col()] == SquareStatus.REMOVED ||
+                this.getTiles()[getWhiteKing().getPosition().row()][getWhiteKing().getPosition().col()] == SquareStatus.REMOVED ||
+                this.getBlackKing().getPosition().equals(this.getWhiteKing().getPosition())){
+            return false;
+        }
+
 
         return true;
+
+
+
     }
+
+
+    public static int countRemovedSquares(SquareStatus[][] tiles){
+        int count=0;
+        for(int i=0;i<tiles.length;i++)
+            for(int j=0;j<tiles[0].length;j++){
+                if(tiles[i][j]==SquareStatus.REMOVED)
+                    count++;
+            }
+        return count;
+    }
+
 }
