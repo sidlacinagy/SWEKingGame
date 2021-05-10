@@ -1,22 +1,47 @@
 import java.util.Arrays;
 import java.util.Objects;
 
+/**
+ * Represents the State of the game.
+ */
 public class GameState {
+
+
     /**
-     * Represents the GameState.
+     * The starting position of the white king.
      */
+    private static final Position WHITEKINGSTARTPOS = new Position(2, 0);
+
+    /**
+     * The starting position of the black king.
+     */
+    private static final Position BLACKKINGSTARTPOS = new Position(3, 7);
+
+    /**
+     * The length of the table.
+     */
+    private static final int BOARDLENGTH = 6;
+
+    /**
+     * The height of the table.
+     */
+    private static final int BOARDHEIGHT = 8;
+
+    /**
+     * The starting player, 0 if white, 1 if black.
+     */
+    private static final int STARTINGPLAYER = 0;
+
+    /**
+     * The starting move, 0 if moving the king, 1 if removing a tile.
+     */
+    private static final int STARTINGMOVE = 0;
+
     private int currentPlayer;
     private int moveIndex;
     private King whiteKing;
     private King blackKing;
     private SquareStatus[][] tiles;
-
-    private static final Position WHITEKINGSTARTPOS = new Position(2, 0);
-    private static final Position BLACKKINGSTARTPOS = new Position(3, 7);
-    private static final int BOARDLENGTH = 6;
-    private static final int BOARDHEIGHT = 8;
-    private static final int STARTINGPLAYER = 0;
-    private static final int STARTINGMOVE = 0;
 
 
     public int getMoveIndex() {
@@ -59,13 +84,12 @@ public class GameState {
         this.tiles = tiles;
     }
 
-    public void setTile(int row, int col, SquareStatus status){
+    public void setTile(int row, int col, SquareStatus status) {
 
-        this.tiles[row][col]=status;
-        //exception
+        this.tiles[row][col] = status;
+
 
     }
-
 
 
     /**
@@ -85,19 +109,39 @@ public class GameState {
         this.moveIndex = moveIndex;
     }
 
+    /**
+     * Creates a {@code GameState} object with the starting positions.
+     *
+     * @return the generated object.
+     */
+
     public static GameState createNewGame() {
         return new GameState(STARTINGPLAYER, STARTINGMOVE, new King(WHITEKINGSTARTPOS), new King(BLACKKINGSTARTPOS), createEmptyTiles());
+        //todo notify
     }
 
-    public static GameState loadGame(int currentPlayer, int moveIndex, King whiteKing, King blackKing, SquareStatus[][] tiles)  {
-        GameState loadedGameState=new GameState(currentPlayer, moveIndex, whiteKing, blackKing, tiles);
+    /**
+     * Creates a {@code GameState} object with the given positions.
+     *
+     * @return the generated object.
+     */
+
+    public static GameState loadGame(int currentPlayer, int moveIndex, King whiteKing, King blackKing, SquareStatus[][] tiles) {
+        GameState loadedGameState = new GameState(currentPlayer, moveIndex, whiteKing, blackKing, tiles);
         if (loadedGameState.isValidGameState()) {
             return new GameState(currentPlayer, moveIndex, whiteKing, blackKing, tiles);
         }
         throw new IllegalArgumentException();
 
+        //todo notify
+
     }
 
+    /**
+     * Creates a 2d array of EMPTY tiles with the given length, height.
+     *
+     * @return the generated object.
+     */
     public static SquareStatus[][] createEmptyTiles() {
         SquareStatus[][] init = new SquareStatus[BOARDLENGTH][BOARDHEIGHT];
         for (int i = 0; i < init.length; i++) {
@@ -139,15 +183,8 @@ public class GameState {
                 //todo notify
             }
 
-            if(this.isGoal()==-1) {
-                return -1;
-            }
-        }
-
-        if(this.isGoal()!=-1){
             return isGoal();
         }
-
 
 
         return -2;
@@ -156,7 +193,7 @@ public class GameState {
 
     /**
      * @param position the position where the king will be moved
-     * Sets the new {@code GameState} object with the new locations
+     *                 Sets the new {@code GameState} object with the new locations
      */
 
     public void applyKingMove(Position position) {
@@ -174,13 +211,13 @@ public class GameState {
 
     /**
      * @param position the position where the tile will be removed
-     * Sets the new {@code GameState} object with the new tiles
+     *                 Sets the new {@code GameState} object with the new tiles
      */
 
     public void applyTileRemove(Position position) {
-        this.setTile(position.row(),position.col(),SquareStatus.REMOVED);
+        this.setTile(position.row(), position.col(), SquareStatus.REMOVED);
         this.setMoveIndex(0);
-        this.setCurrentPlayer((this.getCurrentPlayer()+1)%2);
+        this.setCurrentPlayer((this.getCurrentPlayer() + 1) % 2);
     }
 
     /**
@@ -222,11 +259,21 @@ public class GameState {
 
     }
 
+    /**
+     * @param goalPosition the position, that will be analyzed
+     * @return return true, if the position is on the board, if not returns false.
+     */
 
     public boolean isInPlayField(Position goalPosition) {
         return goalPosition.row() >= 0 && goalPosition.row() < this.getTiles().length &&
                 goalPosition.col() >= 0 && goalPosition.col() < this.getTiles()[0].length;
     }
+
+    /**
+     * @param currentKingPosition the current position of the king that will be moved
+     * @param goalPosition        the position where the king will be moved
+     * @return returns true if the 2 positions are neighbours false, if not.
+     */
 
     public static boolean isNeighbour(Position currentKingPosition, Position goalPosition) {
         for (Direction direction : Direction.values()) {
@@ -236,6 +283,11 @@ public class GameState {
         }
         return false;
     }
+
+    /**
+     * @param goalPosition the position, that will be analyzed
+     * @return returns true if the given position does not contains any king, and is empty, else returns false.
+     */
 
     public boolean isEmpty(Position goalPosition) {
         return !goalPosition.equals(this.getBlackKing().getPosition()) &&
@@ -272,68 +324,72 @@ public class GameState {
      */
 
     public int isGoal() {
-        boolean whiteCanMove=false;
-        boolean blackCanMove=false;
-        for (Direction direction : Direction.values()) {
-            Position whitePosition = new Position(this.getWhiteKing().getPosition().row() + direction.getRowChange(),
-                    this.getWhiteKing().getPosition().col() + direction.getColChange());
-            if (isAppliable(whitePosition)) {
-                whiteCanMove=true;
-            }
-            Position blackPosition = new Position(this.getBlackKing().getPosition().row() + direction.getRowChange(),
-                    this.getBlackKing().getPosition().col() + direction.getColChange());
-            if (isAppliable(blackPosition)) {
-                blackCanMove=true;
-            }
-        }
+        boolean whiteCanMove = canKingMove(this.getWhiteKing());
+        boolean blackCanMove = canKingMove(this.getBlackKing());
 
-        if(whiteCanMove && blackCanMove){
+        if (whiteCanMove && blackCanMove) {
             return -1;
         }
 
-        if(!blackCanMove){
+        if (!blackCanMove) {
             return 0;
         }
 
-        if(!whiteCanMove){
+        if (!whiteCanMove) {
             return 1;
         }
 
         return 9999;
 
-
     }
+
+    /**
+     * @param king the king that will be analyzed
+     * @return returns true, if the king can move, returns false if not
+     */
+
+    public boolean canKingMove(King king) {
+        for (Direction direction : Direction.values()) {
+            Position position = new Position(king.getPosition().row() + direction.getRowChange(),
+                    king.getPosition().col() + direction.getColChange());
+            if (isAppliable(position)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @return returns true, if the {@code GameState} is a valid state, else returns false.
+     */
 
     public boolean isValidGameState() {
 
-        if(countRemovedSquares(this.getTiles())%2!=this.getCurrentPlayer()){
+        if (countRemovedSquares(this.getTiles()) % 2 != this.getCurrentPlayer()) {
             return false;
         }
 
-        //if either king is not in the playfield returns false
-        if(!this.isInPlayField(this.getBlackKing().getPosition())||!this.isInPlayField(this.getWhiteKing().getPosition())){
+        //if either king is not on the playfield returns false
+        if (!this.isInPlayField(this.getBlackKing().getPosition()) || !this.isInPlayField(this.getWhiteKing().getPosition())) {
             return false;
         }
         //if either king is on a removed square or if they are on the same square returns false
-        if(this.getTiles()[getBlackKing().getPosition().row()][getBlackKing().getPosition().col()] == SquareStatus.REMOVED ||
+        if (this.getTiles()[getBlackKing().getPosition().row()][getBlackKing().getPosition().col()] == SquareStatus.REMOVED ||
                 this.getTiles()[getWhiteKing().getPosition().row()][getWhiteKing().getPosition().col()] == SquareStatus.REMOVED ||
-                this.getBlackKing().getPosition().equals(this.getWhiteKing().getPosition())){
+                this.getBlackKing().getPosition().equals(this.getWhiteKing().getPosition())) {
             return false;
         }
 
-
         return true;
-
-
 
     }
 
 
-    public static int countRemovedSquares(SquareStatus[][] tiles){
-        int count=0;
-        for(int i=0;i<tiles.length;i++)
-            for(int j=0;j<tiles[0].length;j++){
-                if(tiles[i][j]==SquareStatus.REMOVED)
+    public static int countRemovedSquares(SquareStatus[][] tiles) {
+        int count = 0;
+        for (int i = 0; i < tiles.length; i++)
+            for (int j = 0; j < tiles[0].length; j++) {
+                if (tiles[i][j] == SquareStatus.REMOVED)
                     count++;
             }
         return count;

@@ -23,9 +23,31 @@ public class GameStateTest {
         gameState2.setTile(0,1,SquareStatus.REMOVED);
         gameState2.setTile(1,1,SquareStatus.REMOVED);
         assertEquals(1,gameState2.applyOperator(new Position(1,0)));
-
-
     }
+
+    @Test
+
+    void testApplyKingAndTileRemove(){
+        GameState gameState3=GameState.loadGame(0,0,new King(3,1),new King(3,7),GameState.createEmptyTiles());
+        GameState gameStateTest=GameState.loadGame(0,1,new King(3,2),new King(3,7),GameState.createEmptyTiles());
+        gameState3.applyKingMove(new Position(3,2));
+        assertEquals(gameStateTest,gameState3);
+        gameState3.applyTileRemove(new Position(5,5));
+        gameStateTest.setMoveIndex(0);
+        gameStateTest.setCurrentPlayer(1);
+        gameStateTest.setTile(5,5,SquareStatus.REMOVED);
+        assertEquals(gameStateTest,gameState3);
+        gameState3.applyKingMove(new Position(4,6));
+        gameStateTest.setMoveIndex(1);
+        gameStateTest.setBlackKing(new King(4,6));
+        assertEquals(gameStateTest,gameState3);
+        gameState3.applyTileRemove(new Position(2,2));
+        gameStateTest.setTile(2,2,SquareStatus.REMOVED);
+        gameStateTest.setMoveIndex(0);
+        gameStateTest.setCurrentPlayer(0);
+        assertEquals(gameStateTest,gameState3);
+    }
+
     @Test
     void testIsAppliable(){
         GameState gameState=GameState.createNewGame();
@@ -89,7 +111,8 @@ public class GameStateTest {
                 GameState.loadGame(0,0,new King(2,0),new King(3,7),GameState.createEmptyTiles()));
 
         assertThrows(IllegalArgumentException.class,()->GameState.loadGame(0,0,new King(2,0),new King(7,7),GameState.createEmptyTiles()));
-
+        assertThrows(IllegalArgumentException.class,()->GameState.loadGame(1,0,new King(2,0),new King(3,3),GameState.createEmptyTiles()));
+        assertThrows(IllegalArgumentException.class,()->GameState.loadGame(0,0,new King(2,0),new King(2,0),GameState.createEmptyTiles()));
     }
 
 
