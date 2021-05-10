@@ -1,4 +1,8 @@
+package model;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -92,14 +96,14 @@ public class GameState {
     }
 
 
-    /**
-     * Creates a {@code GameState} object
+    /*
+     * Creates a {@code state.GameState} object.
      *
-     * @param currentPlayer the player who moves next. 0 if white, 1 if black
-     * @param moveIndex     the object that represents the current move. 0 if the king will be moved, 1 if a tile will be removed
-     * @param whiteKing     the object that represents the white king
-     * @param blackKing     the object that represents the black king
-     * @param tiles         the object that represents the tiles
+     * @param currentPlayer the player who moves next. 0 if white, 1 if black.
+     * @param moveIndex     the object that represents the current move. 0 if the king will be moved, 1 if a tile will be removed.
+     * @param whiteKing     the object that represents the white king.
+     * @param blackKing     the object that represents the black king.
+     * @param tiles         the object that represents the tiles.
      */
     private GameState(int currentPlayer, int moveIndex, King whiteKing, King blackKing, SquareStatus[][] tiles) {
         this.currentPlayer = currentPlayer;
@@ -155,7 +159,7 @@ public class GameState {
 
     @Override
     public String toString() {
-        return "GameState{" +
+        return "state.GameState{" +
                 "currentPlayer=" + currentPlayer +
                 ", moveIndex=" + moveIndex +
                 ", whiteKing=" + whiteKing +
@@ -166,8 +170,8 @@ public class GameState {
 
 
     /**
-     * @param position the position where the King will be moved or where the tile will be removed.
-     * @return returns -2 if the Operator could not be applied, -1 if was successful, but the game not ended, 0 or 1 depending on who have won.
+     * @param position the position where the state.King will be moved or where the tile will be removed.
+     * @return returns -1 if the Operator could not be applied, 1 if was successful.
      */
 
     public int applyOperator(Position position) {
@@ -182,18 +186,14 @@ public class GameState {
                 this.applyTileRemove(position);
                 //todo notify
             }
-
-            return isGoal();
+            return 1;
         }
-
-
-        return -2;
-
+        return -1;
     }
 
     /**
-     * @param position the position where the king will be moved
-     *                 Sets the new {@code GameState} object with the new locations
+     * @param position the position where the king will be moved.
+     *                 Sets the new {@code GameState} object with the new locations.
      */
 
     public void applyKingMove(Position position) {
@@ -210,8 +210,8 @@ public class GameState {
     }
 
     /**
-     * @param position the position where the tile will be removed
-     *                 Sets the new {@code GameState} object with the new tiles
+     * @param position the position where the tile will be removed.
+     *                 Sets the new {@code GameState} object with the new tiles.
      */
 
     public void applyTileRemove(Position position) {
@@ -221,8 +221,8 @@ public class GameState {
     }
 
     /**
-     * @param goalPosition the position of the operator
-     * @return returns whether the given {@code Position} could be applied in the current {@code GameState}
+     * @param goalPosition the position of the operator.
+     * @return returns whether the given {@code Position} could be applied in the current {@code GameState}.
      */
 
     public boolean isAppliable(Position goalPosition) {
@@ -249,9 +249,9 @@ public class GameState {
     }
 
     /**
-     * @param currentKingPosition the position of the king that will be moved
-     * @param goalPosition        the position where the king will be moved
-     * @return returns whether the king could be moved to the given location
+     * @param currentKingPosition the position of the king that will be moved.
+     * @param goalPosition        the position where the king will be moved.
+     * @return returns whether the king could be moved to the given location.
      */
 
     public boolean isKingMoveAppliable(Position currentKingPosition, Position goalPosition) {
@@ -260,7 +260,7 @@ public class GameState {
     }
 
     /**
-     * @param goalPosition the position, that will be analyzed
+     * @param goalPosition the position, that will be analyzed.
      * @return return true, if the position is on the board, if not returns false.
      */
 
@@ -270,8 +270,8 @@ public class GameState {
     }
 
     /**
-     * @param currentKingPosition the current position of the king that will be moved
-     * @param goalPosition        the position where the king will be moved
+     * @param currentKingPosition the current position of the king that will be moved.
+     * @param goalPosition        the position where the king will be moved.
      * @return returns true if the 2 positions are neighbours false, if not.
      */
 
@@ -285,7 +285,7 @@ public class GameState {
     }
 
     /**
-     * @param goalPosition the position, that will be analyzed
+     * @param goalPosition the position, that will be analyzed.
      * @return returns true if the given position does not contains any king, and is empty, else returns false.
      */
 
@@ -344,19 +344,34 @@ public class GameState {
     }
 
     /**
-     * @param king the king that will be analyzed
-     * @return returns true, if the king can move, returns false if not
+     * @param king the king that will be analyzed.
+     * @return returns true, if the king can move, returns false if not.
      */
 
     public boolean canKingMove(King king) {
+
+        return !getAppliablePositions(king).isEmpty();
+
+    }
+
+    /**
+     *
+     * @param king the king that will be analyzed.
+     * @return returns a {@code List} that contains all the positions where the king could move.
+     */
+    public List<Position> getAppliablePositions(King king) {
+
+        List<Position> positions= new ArrayList<>();
+
         for (Direction direction : Direction.values()) {
             Position position = new Position(king.getPosition().row() + direction.getRowChange(),
                     king.getPosition().col() + direction.getColChange());
             if (isAppliable(position)) {
-                return true;
+                positions.add(position);
             }
         }
-        return false;
+        System.out.println(positions);
+        return positions;
     }
 
     /**

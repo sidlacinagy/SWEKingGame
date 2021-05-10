@@ -1,5 +1,9 @@
+package model;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -9,8 +13,8 @@ class PositionTest {
 
     void assertPosition(int expectedRow, int expectedCol, Position position) {
         assertAll("position",
-                () -> assertEquals(expectedRow, position.row()),
-                () -> assertEquals(expectedCol, position.col())
+                () -> Assertions.assertEquals(expectedRow, position.row()),
+                () -> Assertions.assertEquals(expectedCol, position.col())
         );
     }
 
@@ -139,31 +143,31 @@ class PositionTest {
 
     @Test
     void testEquals() {
-        assertEquals(position, position);
-        assertEquals(new Position(position.row(), position.col()), position);
-        assertNotEquals(new Position(Integer.MIN_VALUE, position.col()), position);
-        assertNotEquals(new Position(position.row(), Integer.MAX_VALUE), position);
-        assertNotEquals(new Position(Integer.MIN_VALUE, Integer.MAX_VALUE), position);
-        assertNotEquals(position, null);
-        assertNotEquals(position, "Hello, World!");
+        Assertions.assertEquals(position, position);
+        Assertions.assertEquals(new Position(position.row(), position.col()), position);
+        Assertions.assertNotEquals(new Position(Integer.MIN_VALUE, position.col()), position);
+        Assertions.assertNotEquals(new Position(position.row(), Integer.MAX_VALUE), position);
+        Assertions.assertNotEquals(new Position(Integer.MIN_VALUE, Integer.MAX_VALUE), position);
+        Assertions.assertNotEquals(position, null);
+        Assertions.assertNotEquals(position, "Hello, World!");
     }
 
     @Test
     void testHashCode() {
-        assertEquals(position.hashCode(), position.hashCode());
-        assertEquals(new Position(position.row(), position.col()).hashCode(), position.hashCode());
+        Assertions.assertEquals(position.hashCode(), position.hashCode());
+        Assertions.assertEquals(new Position(position.row(), position.col()).hashCode(), position.hashCode());
     }
 
     @Test
     void testClone() {
         var clone = position.clone();
-        assertEquals(position, clone);
+        Assertions.assertEquals(position, clone);
         assertNotSame(position, clone);
     }
 
     @Test
     void testToString() {
-        assertEquals("(0,0)", position.toString());
+        Assertions.assertEquals("(0,0)", position.toString());
     }
 
 }

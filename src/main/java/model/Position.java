@@ -1,3 +1,5 @@
+package model;
+
 import java.util.Objects;
 
 /**
@@ -9,7 +11,7 @@ public class Position implements Cloneable {
     private int col;
 
     /**
-     * Creates a {@code Position} object.
+     * Creates a {@code state.Position} object.
      *
      * @param row the row coordinate of the position
      * @param col the column coordinate of the position

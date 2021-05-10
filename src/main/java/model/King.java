@@ -1,4 +1,7 @@
+package model;
+
 import java.util.Objects;
+import java.util.Spliterators;
 
 public class King {
 
@@ -21,7 +24,7 @@ public class King {
     }
 
     /**
-     * Creates a {@code King} object.
+     * Creates a {@code state.King} object.
      *
      * @param position the position of the king
      */
@@ -31,7 +34,7 @@ public class King {
     }
 
     /**
-     * Creates a {@code King} object.
+     * Creates a {@code state.King} object.
      *
      * @param row the row coordinate of the king
      * @param col the column coordinate of the king
@@ -56,7 +59,7 @@ public class King {
 
     @Override
     public String toString() {
-        return "King{" +
+        return "state.King{" +
                 "position=" + position +
                 '}';
     }
