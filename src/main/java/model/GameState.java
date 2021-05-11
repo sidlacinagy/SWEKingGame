@@ -1,9 +1,6 @@
 package model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Represents the State of the game.
@@ -46,6 +43,8 @@ public class GameState {
     private King whiteKing;
     private King blackKing;
     private SquareStatus[][] tiles;
+    private Stack<Position> undoStack;
+    private Stack<Position> redoStack;
 
 
     public int getMoveIndex() {
@@ -91,10 +90,23 @@ public class GameState {
     public void setTile(int row, int col, SquareStatus status) {
 
         this.tiles[row][col] = status;
-
-
     }
 
+    public Stack<Position> getUndoStack() {
+        return undoStack;
+    }
+
+    public void setUndoStack(Stack<Position> undoStack) {
+        this.undoStack = undoStack;
+    }
+
+    public Stack<Position> getRedoStack() {
+        return redoStack;
+    }
+
+    public void setRedoStack(Stack<Position> redoStack) {
+        this.redoStack = redoStack;
+    }
 
     /*
      * Creates a {@code state.GameState} object.
@@ -104,13 +116,18 @@ public class GameState {
      * @param whiteKing     the object that represents the white king.
      * @param blackKing     the object that represents the black king.
      * @param tiles         the object that represents the tiles.
+     * @param undoStack     a stack which stores the previous positions.
+     * @param redoStack     a stack which stores the positions which could be redone.
      */
-    private GameState(int currentPlayer, int moveIndex, King whiteKing, King blackKing, SquareStatus[][] tiles) {
+
+    public GameState(int currentPlayer, int moveIndex, King whiteKing, King blackKing, SquareStatus[][] tiles, Stack<Position> undo, Stack<Position> redo) {
         this.currentPlayer = currentPlayer;
+        this.moveIndex = moveIndex;
         this.whiteKing = whiteKing;
         this.blackKing = blackKing;
         this.tiles = tiles;
-        this.moveIndex = moveIndex;
+        this.undoStack = undo;
+        this.redoStack = redo;
     }
 
     /**
@@ -120,7 +137,8 @@ public class GameState {
      */
 
     public static GameState createNewGame() {
-        return new GameState(STARTINGPLAYER, STARTINGMOVE, new King(WHITEKINGSTARTPOS), new King(BLACKKINGSTARTPOS), createEmptyTiles());
+        return new GameState(STARTINGPLAYER, STARTINGMOVE, new King(WHITEKINGSTARTPOS),
+                new King(BLACKKINGSTARTPOS), createEmptyTiles(), new Stack<>(),new Stack<>());
         //todo notify
     }
 
@@ -130,10 +148,12 @@ public class GameState {
      * @return the generated object.
      */
 
-    public static GameState loadGame(int currentPlayer, int moveIndex, King whiteKing, King blackKing, SquareStatus[][] tiles) {
-        GameState loadedGameState = new GameState(currentPlayer, moveIndex, whiteKing, blackKing, tiles);
+    public static GameState loadGame(int currentPlayer, int moveIndex, King whiteKing,
+                                     King blackKing, SquareStatus[][] tiles, Stack<Position> undo,Stack<Position> redo) {
+
+        GameState loadedGameState = new GameState(currentPlayer, moveIndex, whiteKing, blackKing, tiles,undo,redo);
         if (loadedGameState.isValidGameState()) {
-            return new GameState(currentPlayer, moveIndex, whiteKing, blackKing, tiles);
+            return loadedGameState;
         }
         throw new IllegalArgumentException();
 
@@ -159,15 +179,16 @@ public class GameState {
 
     @Override
     public String toString() {
-        return "state.GameState{" +
+        return "GameState{" +
                 "currentPlayer=" + currentPlayer +
                 ", moveIndex=" + moveIndex +
                 ", whiteKing=" + whiteKing +
                 ", blackKing=" + blackKing +
-                ", tiles=" + tiles +
+                ", tiles=" + Arrays.toString(tiles) +
+                ", undoStack=" + undoStack +
+                ", redoStack=" + redoStack +
                 '}';
     }
-
 
     /**
      * @param position the position where the state.King will be moved or where the tile will be removed.
@@ -178,34 +199,94 @@ public class GameState {
 
 
         if (isAppliable(position)) {
+            Position undoPos=null;
             if (this.getMoveIndex() == 0) {
-                this.applyKingMove(position);
-                //todo notify
+                undoPos=this.applyKingMove(position);
+
 
             } else if (this.getMoveIndex() == 1) {
-                this.applyTileRemove(position);
-                //todo notify
+                 this.applyTileRemove(position);
+                 undoPos=position;
+
             }
+
+            redoStack.clear();
+            undoStack.push(undoPos);
             return 1;
+
         }
         return -1;
     }
 
     /**
-     * @param position the position where the king will be moved.
-     *                 Sets the new {@code GameState} object with the new locations.
+     * Redoes the undone move if there were any.
      */
 
-    public void applyKingMove(Position position) {
+    public void redo(){
+        if(!redoStack.isEmpty()) {
+            Position undoPos=null;
+            if (this.getMoveIndex() == 0) {
+                undoPos=this.applyKingMove(redoStack.peek());
+
+
+            } else if (this.getMoveIndex() == 1) {
+                this.applyTileRemove(redoStack.peek());
+                undoPos=redoStack.peek();
+
+            }
+            undoStack.push(undoPos);
+            redoStack.pop();
+        }
+    }
+
+    /**
+     * Undoes the previous move, if there were any.
+     */
+
+    public void undo(){
+        if(!undoStack.isEmpty()){
+
+            Position undoPos=undoStack.peek();
+            Position redoPos=null;
+
+            if(this.getMoveIndex()==0){
+                redoPos=undoPos;
+                this.setTile(undoPos.row(), undoPos.col(), SquareStatus.EMPTY);
+                this.setMoveIndex(1);
+                this.setCurrentPlayer((this.getCurrentPlayer()+1)%2);
+
+            }
+
+            else if(this.getMoveIndex()==1){
+                    redoPos=this.applyKingMove(undoPos);
+                    this.setMoveIndex(0);
+            }
+
+            redoStack.push(redoPos);
+            undoStack.pop();
+        }
+    }
+
+    /**
+     * Sets the new {@code GameState} object with the new locations.
+     *
+     * @return returns the past {@code Position} of the king.
+     * @param position the position where the king will be moved.
+     *
+     */
+
+    public Position applyKingMove(Position position) {
+        Position pastKingPos=null;
         if (this.getCurrentPlayer() == 0) {
             this.setMoveIndex(1);
+            pastKingPos= getWhiteKing().getPosition();
             this.getWhiteKing().setPosition(position);
         } else if (this.getCurrentPlayer() == 1) {
             this.setMoveIndex(1);
+            pastKingPos= getBlackKing().getPosition();
             this.getBlackKing().setPosition(position);
         }
-
-        //todo exception
+        return pastKingPos;
 
     }
 
@@ -311,12 +392,14 @@ public class GameState {
                 moveIndex == gameState.moveIndex &&
                 whiteKing.equals(gameState.whiteKing) &&
                 blackKing.equals(gameState.blackKing) &&
+                undoStack.equals(gameState.undoStack) &&
+                redoStack.equals(gameState.redoStack) &&
                 tile;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(currentPlayer, moveIndex, whiteKing, blackKing, tiles);
+        return Objects.hash(currentPlayer, moveIndex, whiteKing, blackKing, tiles,redoStack,undoStack);
     }
 
     /**
@@ -370,7 +453,6 @@ public class GameState {
                 positions.add(position);
             }
         }
-        System.out.println(positions);
         return positions;
     }
 
