@@ -2,8 +2,6 @@ package model;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
 
-import java.util.Objects;
-import java.util.Spliterators;
 /**
  * Represents a king.
  */
@@ -15,7 +13,12 @@ public class King {
 
     /**
      * {@return the position of the king}
+     * @return
      */
+
+    public ReadOnlyObjectWrapper<Position> getPositionWrapped() {
+        return position;
+    }
 
     public Position getPosition() {
         return position.get();

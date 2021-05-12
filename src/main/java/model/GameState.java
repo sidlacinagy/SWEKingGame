@@ -3,6 +3,7 @@ package model;
 import java.util.*;
 
 
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 
 /**
@@ -90,6 +91,14 @@ public class GameState {
         return tiles;
     }
 
+    public ReadOnlyObjectProperty<SquareStatus> getTileProperty(int i, int j) {
+        return tiles[i][j].getReadOnlyProperty();
+    }
+
+    public ReadOnlyObjectWrapper<SquareStatus>[][] getTilesWrapped(){
+        return tiles;
+    }
+
     public void setTiles(SquareStatus[][] tiles) {
         for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles[0].length; j++) {
@@ -99,8 +108,7 @@ public class GameState {
     }
 
     public void setTile(int row, int col, SquareStatus status) {
-
-        this.tiles[row][col] = new ReadOnlyObjectWrapper<>(status);
+        this.tiles[row][col].set(status);
     }
 
     public Stack<Position> getUndoStack() {
@@ -467,7 +475,7 @@ public class GameState {
         for (Direction direction : Direction.values()) {
             Position position = new Position(king.getPosition().row() + direction.getRowChange(),
                     king.getPosition().col() + direction.getColChange());
-            if (isAppliable(position)) {
+            if (isInPlayField(position) && isEmpty(position)) {
                 positions.add(position);
             }
         }
