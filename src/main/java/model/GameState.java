@@ -7,7 +7,6 @@ import java.util.*;
  */
 public class GameState {
 
-
     /**
      * The starting position of the white king.
      */
@@ -470,6 +469,15 @@ public class GameState {
         if (!this.isInPlayField(this.getBlackKing().getPosition()) || !this.isInPlayField(this.getWhiteKing().getPosition())) {
             return false;
         }
+
+        if(this.getCurrentPlayer()!=1 ||this.getCurrentPlayer()!=0){
+            return false;
+        }
+
+        if(this.getMoveIndex()!=1 ||this.getMoveIndex()!=0){
+            return false;
+        }
+
         //if either king is on a removed square or if they are on the same square returns false
         if (this.getTiles()[getBlackKing().getPosition().row()][getBlackKing().getPosition().col()] == SquareStatus.REMOVED ||
                 this.getTiles()[getWhiteKing().getPosition().row()][getWhiteKing().getPosition().col()] == SquareStatus.REMOVED ||
