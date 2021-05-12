@@ -1,26 +1,28 @@
 package model;
 
+import javafx.beans.property.ReadOnlyObjectWrapper;
+
 import java.util.Objects;
 import java.util.Spliterators;
-
+/**
+ * Represents a king.
+ */
 public class King {
 
-    /**
-     * Represents a king.
-     */
 
-    private Position position;
+
+    private ReadOnlyObjectWrapper<Position> position;
 
     /**
      * {@return the position of the king}
      */
 
     public Position getPosition() {
-        return position;
+        return position.get();
     }
 
     public void setPosition(Position position) {
-        this.position = position;
+        this.position.set(position);
     }
 
     /**
@@ -30,7 +32,7 @@ public class King {
      */
 
     public King(Position position) {
-        this.position = position;
+        this.position=new ReadOnlyObjectWrapper<>(position);
     }
 
     /**
@@ -41,7 +43,7 @@ public class King {
      */
 
     public King(int row, int col) {
-        this.position = new Position(row, col);
+        this.position = new ReadOnlyObjectWrapper<>(new Position(row, col));
     }
 
     @Override
@@ -49,7 +51,7 @@ public class King {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         King king = (King) o;
-        return Objects.equals(position, king.position);
+        return king.getPosition().equals(this.getPosition());
     }
 
     @Override

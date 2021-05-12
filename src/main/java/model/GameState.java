@@ -2,6 +2,9 @@ package model;
 
 import java.util.*;
 
+
+import javafx.beans.property.ReadOnlyObjectWrapper;
+
 /**
  * Represents the State of the game.
  */
@@ -41,7 +44,7 @@ public class GameState {
     private int moveIndex;
     private King whiteKing;
     private King blackKing;
-    private SquareStatus[][] tiles;
+    private ReadOnlyObjectWrapper<SquareStatus>[][] tiles;
     private Stack<Position> undoStack;
     private Stack<Position> redoStack;
 
@@ -66,8 +69,7 @@ public class GameState {
         return whiteKing;
     }
 
-    public void setWhiteKing(King whiteKing) {
-        this.whiteKing = whiteKing;
+    public void setWhiteKing(King whiteKing) { this.whiteKing=whiteKing;
     }
 
     public King getBlackKing() {
@@ -75,20 +77,30 @@ public class GameState {
     }
 
     public void setBlackKing(King blackKing) {
-        this.blackKing = blackKing;
+        this.blackKing=blackKing;
     }
 
     public SquareStatus[][] getTiles() {
+        SquareStatus[][] tiles =new SquareStatus[this.tiles.length][this.tiles[0].length];
+        for (int i = 0; i < this.tiles.length; i++) {
+            for (int j = 0; j < this.tiles[0].length; j++) {
+                tiles[i][j] = this.tiles[i][j].get();
+            }
+        }
         return tiles;
     }
 
     public void setTiles(SquareStatus[][] tiles) {
-        this.tiles = tiles;
+        for (int i = 0; i < tiles.length; i++) {
+            for (int j = 0; j < tiles[0].length; j++) {
+                this.tiles[i][j] = new ReadOnlyObjectWrapper<>(tiles[i][j]);
+            }
+        }
     }
 
     public void setTile(int row, int col, SquareStatus status) {
 
-        this.tiles[row][col] = status;
+        this.tiles[row][col] = new ReadOnlyObjectWrapper<>(status);
     }
 
     public Stack<Position> getUndoStack() {
@@ -124,7 +136,13 @@ public class GameState {
         this.moveIndex = moveIndex;
         this.whiteKing = whiteKing;
         this.blackKing = blackKing;
-        this.tiles = tiles;
+        ReadOnlyObjectWrapper<SquareStatus>[][] tilesInit=new ReadOnlyObjectWrapper[tiles.length][tiles[0].length];
+        for (int i = 0; i < tiles.length; i++) {
+            for (int j = 0; j < tiles[0].length; j++) {
+                tilesInit[i][j] = new ReadOnlyObjectWrapper<>(tiles[i][j]);
+            }
+        }
+        this.tiles=tilesInit;
         this.undoStack = undo;
         this.redoStack = redo;
     }
@@ -382,7 +400,8 @@ public class GameState {
         GameState gameState = (GameState) o;
         boolean tile = true;
         for (int i = 0; i < this.getTiles().length; i++) {
-            if (!Arrays.equals(gameState.getTiles()[i], this.getTiles()[i])) {
+            for(int j=0;j<this.getTiles()[0].length;j++)
+            if (this.getTiles()[i][j]!=gameState.getTiles()[i][j]) {
                 tile = false;
             }
         }
@@ -470,11 +489,11 @@ public class GameState {
             return false;
         }
 
-        if(this.getCurrentPlayer()!=1 ||this.getCurrentPlayer()!=0){
+        if(this.getCurrentPlayer()!=1 && this.getCurrentPlayer()!=0){
             return false;
         }
 
-        if(this.getMoveIndex()!=1 ||this.getMoveIndex()!=0){
+        if(this.getMoveIndex()!=1 && this.getMoveIndex()!=0){
             return false;
         }
 
