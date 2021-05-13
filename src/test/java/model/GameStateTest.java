@@ -69,7 +69,8 @@ public class GameStateTest {
         tiles[0][1]= SquareStatus.REMOVED;
         tiles[1][1]= SquareStatus.REMOVED;
         tiles[1][0]= SquareStatus.REMOVED;
-        GameState gameState= GameState.loadGame(1,1,new King(0,0),new King(4,4),tiles,emptyStack,emptyStack);
+        tiles[2][2]= SquareStatus.REMOVED;
+        GameState gameState= GameState.loadGame(0,0,new King(0,0),new King(4,4),tiles,emptyStack,emptyStack);
         Assertions.assertEquals( 1,gameState.isGoal());
         gameState.setWhiteKing(new King(3,3));
         Assertions.assertEquals( -1,gameState.isGoal());

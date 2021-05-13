@@ -3,6 +3,7 @@ package model;
 import java.util.*;
 
 
+import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 
@@ -55,7 +56,7 @@ public class GameState {
     }
 
     public void setMoveIndex(int moveIndex) {
-        this.moveIndex = moveIndex;
+        this.moveIndex=moveIndex;
     }
 
     public int getCurrentPlayer() {
@@ -63,7 +64,7 @@ public class GameState {
     }
 
     public void setCurrentPlayer(int currentPlayer) {
-        this.currentPlayer = currentPlayer;
+        this.currentPlayer=currentPlayer;
     }
 
     public King getWhiteKing() {
@@ -433,22 +434,20 @@ public class GameState {
      */
 
     public int isGoal() {
-        boolean whiteCanMove = canKingMove(this.getWhiteKing());
-        boolean blackCanMove = canKingMove(this.getBlackKing());
-
-        if (whiteCanMove && blackCanMove) {
-            return -1;
+        boolean canMove=true;
+        if(this.getCurrentPlayer()==0 && this.getMoveIndex()==0)
+        {
+            canMove=canKingMove(this.getWhiteKing());
+        }
+        if(this.getCurrentPlayer()==1 && this.getMoveIndex()==0)
+        {
+            canMove=canKingMove(this.getBlackKing());
         }
 
-        if (!blackCanMove) {
-            return 0;
+        if(!canMove){
+            return ((this.getCurrentPlayer())+1)%2;
         }
-
-        if (!whiteCanMove) {
-            return 1;
-        }
-
-        return 9999;
+        return -1;
 
     }
 
@@ -504,6 +503,7 @@ public class GameState {
         if(this.getMoveIndex()!=1 && this.getMoveIndex()!=0){
             return false;
         }
+
 
         //if either king is on a removed square or if they are on the same square returns false
         if (this.getTiles()[getBlackKing().getPosition().row()][getBlackKing().getPosition().col()] == SquareStatus.REMOVED ||

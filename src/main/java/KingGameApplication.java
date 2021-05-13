@@ -9,7 +9,7 @@ public class KingGameApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/ui.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/mainmenu.fxml"));
         stage.setTitle("SWE KINGGAME");
         Scene scene = new Scene(root);
         stage.setScene(scene);
