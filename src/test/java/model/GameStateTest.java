@@ -13,8 +13,8 @@ public class GameStateTest {
 
     Stack<Position> emptyStack= new Stack<>();
     GameState gameStateBase= GameState.createNewGame();
-    GameState gameState1= GameState.loadGame(0,1,new King(3,1),new King(3,7), GameState.createEmptyTiles(),emptyStack,emptyStack);
-    GameState gameState2= GameState.loadGame(0,1,new King(0,0),new King(4,4), GameState.createEmptyTiles(),emptyStack,emptyStack);
+    GameState gameState1= new GameState(0,1, GameState.createEmptyTiles(),emptyStack,emptyStack,new Position(3,7),new Position(3,1));
+    GameState gameState2= new GameState(0,1, GameState.createEmptyTiles(),emptyStack,emptyStack,new Position(4,4),new Position(0,0));
 
 
     @Test
@@ -33,8 +33,8 @@ public class GameStateTest {
     @Test
 
     void testApplyKingAndTileRemove(){
-        GameState gameState3= GameState.loadGame(0,0,new King(3,1),new King(3,7), GameState.createEmptyTiles(),emptyStack,emptyStack);
-        GameState gameStateTest= GameState.loadGame(0,1,new King(3,2),new King(3,7), GameState.createEmptyTiles(),emptyStack,emptyStack);
+        GameState gameState3= new GameState(0,0, GameState.createEmptyTiles(),emptyStack,emptyStack,new Position(3,7),new Position(3,1));
+        GameState gameStateTest=new GameState(0,1, GameState.createEmptyTiles(),emptyStack,emptyStack,new Position(3,7),new Position(3,2));
         gameState3.applyKingMove(new Position(3,2));
         Assertions.assertEquals(gameStateTest,gameState3);
         gameState3.applyTileRemove(new Position(5,5));
@@ -70,7 +70,7 @@ public class GameStateTest {
         tiles[1][1]= SquareStatus.REMOVED;
         tiles[1][0]= SquareStatus.REMOVED;
         tiles[2][2]= SquareStatus.REMOVED;
-        GameState gameState= GameState.loadGame(0,0,new King(0,0),new King(4,4),tiles,emptyStack,emptyStack);
+        GameState gameState= new GameState(0,0,tiles,emptyStack,emptyStack,new Position(4,4),new Position(0,0));
         Assertions.assertEquals( 1,gameState.isGoal());
         gameState.setWhiteKing(new King(3,3));
         Assertions.assertEquals( -1,gameState.isGoal());
@@ -111,14 +111,10 @@ public class GameStateTest {
 
     @Test
 
-    void testLoadGame()  {
+    void testLoadGame() {
 
         Assertions.assertEquals(GameState.createNewGame(),
-                GameState.loadGame(0,0,new King(2,0),new King(3,7), GameState.createEmptyTiles(),emptyStack,emptyStack));
-
-        assertThrows(IllegalArgumentException.class,()-> GameState.loadGame(0,0,new King(2,0),new King(7,7), GameState.createEmptyTiles(),emptyStack,emptyStack));
-        assertThrows(IllegalArgumentException.class,()-> GameState.loadGame(1,0,new King(2,0),new King(3,3), GameState.createEmptyTiles(),emptyStack,emptyStack));
-        assertThrows(IllegalArgumentException.class,()-> GameState.loadGame(0,0,new King(2,0),new King(2,0), GameState.createEmptyTiles(),emptyStack,emptyStack));
+                new GameState(0, 0, GameState.createEmptyTiles(), emptyStack, emptyStack, new Position(3, 7), new Position(2, 0)));
     }
 
     @Test
@@ -131,13 +127,13 @@ public class GameStateTest {
         gameState.undo();
         undoStack.push(new Position(2,0));
         redoStack.push(new Position(3,4));
-        assertEquals(GameState.loadGame(0,1,new King(2,1),new King(3,7),
-                GameState.createEmptyTiles(),undoStack,redoStack),gameState);
+        assertEquals(new GameState(0,1,
+                GameState.createEmptyTiles(),undoStack,redoStack,new Position(3,7),new Position(2,1)),gameState);
         gameState.undo();
         undoStack.pop();
         redoStack.push(new Position(2,1));
-        assertEquals(GameState.loadGame(0,0,new King(2,0),new King(3,7),
-                GameState.createEmptyTiles(),undoStack,redoStack),gameState);
+        assertEquals(new GameState(0,0,
+                GameState.createEmptyTiles(),undoStack,redoStack,new Position(3,7),new Position(2,0)),gameState);
         gameState.redo();
         gameState.redo();
         undoStack.push(new Position(2,0));
@@ -145,8 +141,8 @@ public class GameStateTest {
         redoStack.clear();
         SquareStatus[][] tiles =GameState.createEmptyTiles();
         tiles[3][4]=SquareStatus.REMOVED;
-        assertEquals(GameState.loadGame(1,0,new King(2,1),new King(3,7),
-               tiles ,undoStack,redoStack),gameState);
+        assertEquals(new GameState(1,0,
+               tiles ,undoStack,redoStack,new Position(3,7),new Position(2,1)),gameState);
 
 
     }

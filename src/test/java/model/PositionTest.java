@@ -31,44 +31,6 @@ class PositionTest {
         assertPosition(0, -1, position.getTarget(Direction.LEFT));
     }
 
-    @Test
-    void getUp() {
-        assertPosition(-1, 0, position.getUp());
-    }
-
-    @Test
-    void getRight() {
-        assertPosition(0, 1, position.getRight());
-    }
-
-    @Test
-    void getDown() {
-        assertPosition(1, 0, position.getDown());
-    }
-
-    @Test
-    void getLeft() {
-        assertPosition(0, -1, position.getLeft());
-    }
-    @Test
-    void getUpRight() {
-        assertPosition(-1, 1, position.getUpRight());
-    }
-
-    @Test
-    void getDownRight() {
-        assertPosition(1, 1, position.getDownRight());
-    }
-
-    @Test
-    void getDownLeft() {
-        assertPosition(1, -1, position.getDownLeft());
-    }
-
-    @Test
-    void getUpLeft() {
-        assertPosition(-1, -1, position.getUpLeft());
-    }
 
     @Test
     void setTarget_up() {
@@ -94,52 +56,7 @@ class PositionTest {
         assertPosition(0, -1, position);
     }
 
-    @Test
-    void setUp() {
-        position.setUp();
-        assertPosition(-1, 0, position);
-    }
 
-    @Test
-    void setRight() {
-        position.setRight();
-        assertPosition(0, 1, position);
-    }
-
-    @Test
-    void setDown() {
-        position.setDown();
-        assertPosition(1, 0, position);
-    }
-
-    @Test
-    void setLeft() {
-        position.setLeft();
-        assertPosition(0, -1, position);
-    }
-    @Test
-    void setUpRight() {
-        position.setUpRight();
-        assertPosition(-1, 1, position);
-    }
-
-    @Test
-    void setDownRight() {
-        position.setDownRight();
-        assertPosition(1, 1, position);
-    }
-
-    @Test
-    void setUpLeft() {
-        position.setUpLeft();
-        assertPosition(-1, -1, position);
-    }
-
-    @Test
-    void setDownLeft() {
-        position.setDownLeft();
-        assertPosition(1, -1, position);
-    }
 
     @Test
     void testEquals() {

@@ -3,6 +3,9 @@ package model;
 import java.util.*;
 
 
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -41,20 +44,23 @@ public class GameState {
      * The starting move, 0 if moving the king, 1 if removing a tile.
      */
     private static final int STARTINGMOVE = 0;
-
     private int currentPlayer;
     private int moveIndex;
+    @JsonProperty("whiteKingPos")
     private King whiteKing;
+    @JsonProperty("blackKingPos")
     private King blackKing;
+    @JsonProperty("tiles")
     private ReadOnlyObjectWrapper<SquareStatus>[][] tiles;
+    @JsonProperty("undoStack")
     private Stack<Position> undoStack;
+    @JsonProperty("redoStack")
     private Stack<Position> redoStack;
-
 
     public int getMoveIndex() {
         return moveIndex;
     }
-
+    @JsonProperty("moveIndex")
     public void setMoveIndex(int moveIndex) {
         this.moveIndex=moveIndex;
     }
@@ -62,13 +68,29 @@ public class GameState {
     public int getCurrentPlayer() {
         return currentPlayer;
     }
-
+    @JsonProperty("currentPlayer")
     public void setCurrentPlayer(int currentPlayer) {
         this.currentPlayer=currentPlayer;
     }
 
     public King getWhiteKing() {
         return whiteKing;
+    }
+    @JsonGetter
+    public Position getWhiteKingPos(){
+        return whiteKing.getPosition();
+    }
+    @JsonGetter
+    public Position getBlackKingPos(){
+        return blackKing.getPosition();
+    }
+    @JsonSetter
+    public void setBlackKingPos(Position pos){
+        blackKing.setPosition(pos);
+    }
+    @JsonSetter
+    public void setWhiteKingPos(Position pos){
+        whiteKing.setPosition(pos);
     }
 
     public void setWhiteKing(King whiteKing) { this.whiteKing=whiteKing;
@@ -78,10 +100,14 @@ public class GameState {
         return blackKing;
     }
 
+
     public void setBlackKing(King blackKing) {
         this.blackKing=blackKing;
     }
 
+
+
+    @JsonGetter
     public SquareStatus[][] getTiles() {
         SquareStatus[][] tiles =new SquareStatus[this.tiles.length][this.tiles[0].length];
         for (int i = 0; i < this.tiles.length; i++) {
@@ -91,15 +117,16 @@ public class GameState {
         }
         return tiles;
     }
-
+    @JsonIgnore
     public ReadOnlyObjectProperty<SquareStatus> getTileProperty(int i, int j) {
         return tiles[i][j].getReadOnlyProperty();
     }
-
+    @JsonIgnore
     public ReadOnlyObjectWrapper<SquareStatus>[][] getTilesWrapped(){
         return tiles;
     }
-
+    @JsonProperty("tiles")
+    @JsonSetter
     public void setTiles(SquareStatus[][] tiles) {
         for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles[0].length; j++) {
@@ -115,7 +142,7 @@ public class GameState {
     public Stack<Position> getUndoStack() {
         return undoStack;
     }
-
+    @JsonProperty("undoStack")
     public void setUndoStack(Stack<Position> undoStack) {
         this.undoStack = undoStack;
     }
@@ -123,7 +150,7 @@ public class GameState {
     public Stack<Position> getRedoStack() {
         return redoStack;
     }
-
+    @JsonProperty("redoStack")
     public void setRedoStack(Stack<Position> redoStack) {
         this.redoStack = redoStack;
     }
@@ -139,12 +166,15 @@ public class GameState {
      * @param undoStack     a stack which stores the previous positions.
      * @param redoStack     a stack which stores the positions which could be redone.
      */
-
-    public GameState(int currentPlayer, int moveIndex, King whiteKing, King blackKing, SquareStatus[][] tiles, Stack<Position> undo, Stack<Position> redo) {
+    @JsonCreator
+    public GameState(@JsonProperty("currentPlayer") int currentPlayer, @JsonProperty("moveIndex") int moveIndex,
+                     @JsonProperty("tiles") SquareStatus[][] tiles,
+                     @JsonProperty("undoStack") Stack<Position> undoStack,@JsonProperty("redoStack") Stack<Position> redoStack,
+                     @JsonProperty("blackKingPos") Position blackKingPos,@JsonProperty("whiteKingPos") Position whiteKingPos) {
         this.currentPlayer = currentPlayer;
         this.moveIndex = moveIndex;
-        this.whiteKing = whiteKing;
-        this.blackKing = blackKing;
+        this.whiteKing = new King(whiteKingPos);
+        this.blackKing = new King(blackKingPos);
         ReadOnlyObjectWrapper<SquareStatus>[][] tilesInit=new ReadOnlyObjectWrapper[tiles.length][tiles[0].length];
         for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles[0].length; j++) {
@@ -152,9 +182,12 @@ public class GameState {
             }
         }
         this.tiles=tilesInit;
-        this.undoStack = undo;
-        this.redoStack = redo;
+        this.undoStack = undoStack;
+        this.redoStack = redoStack;
     }
+
+
+
 
     /**
      * Creates a {@code GameState} object with the starting positions.
@@ -163,35 +196,17 @@ public class GameState {
      */
 
     public static GameState createNewGame() {
-        return new GameState(STARTINGPLAYER, STARTINGMOVE, new King(WHITEKINGSTARTPOS),
-                new King(BLACKKINGSTARTPOS), createEmptyTiles(), new Stack<>(),new Stack<>());
-        //todo notify
+        return new GameState(STARTINGPLAYER, STARTINGMOVE,
+                 createEmptyTiles(), new Stack<>(),new Stack<>(),BLACKKINGSTARTPOS,WHITEKINGSTARTPOS);
     }
 
-    /**
-     * Creates a {@code GameState} object with the given positions.
-     *
-     * @return the generated object.
-     */
-
-    public static GameState loadGame(int currentPlayer, int moveIndex, King whiteKing,
-                                     King blackKing, SquareStatus[][] tiles, Stack<Position> undo,Stack<Position> redo) {
-
-        GameState loadedGameState = new GameState(currentPlayer, moveIndex, whiteKing, blackKing, tiles,undo,redo);
-        if (loadedGameState.isValidGameState()) {
-            return loadedGameState;
-        }
-        throw new IllegalArgumentException();
-
-        //todo notify
-
-    }
 
     /**
      * Creates a 2d array of EMPTY tiles with the given length, height.
      *
      * @return the generated object.
      */
+
     public static SquareStatus[][] createEmptyTiles() {
         SquareStatus[][] init = new SquareStatus[BOARDLENGTH][BOARDHEIGHT];
         for (int i = 0; i < init.length; i++) {
@@ -350,7 +365,7 @@ public class GameState {
         else if (this.getMoveIndex() == 1) {
             return isInPlayField(goalPosition) && isEmpty(goalPosition);
         }
-        //todo exception
+
         return false;
 
     }
@@ -484,7 +499,7 @@ public class GameState {
     /**
      * @return returns true, if the {@code GameState} is a valid state, else returns false.
      */
-
+    @JsonIgnore
     public boolean isValidGameState() {
 
         if (countRemovedSquares(this.getTiles()) % 2 != this.getCurrentPlayer()) {

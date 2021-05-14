@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="LoadMenuController">
+   <children>
+      <HBox fx:id="hBox0" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+         <children>
+            <TextField fx:id="textField0" alignment="CENTER" editable="false" text="Empty" />
+            <Button fx:id="load0" disable="true" mnemonicParsing="false" onMouseClicked="#load0" text="Load" />
+            <Button fx:id="delete0" disable="true" mnemonicParsing="false" onMouseClicked="#delete0" text="Delete" />
+         </children>
+      </HBox>
+      <HBox fx:id="hBox1" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+         <children>
+            <TextField fx:id="textField1" alignment="CENTER" editable="false" text="Empty" />
+            <Button fx:id="load1" disable="true" mnemonicParsing="false" onMouseClicked="#load1" text="Load" />
+            <Button fx:id="delete1" disable="true" mnemonicParsing="false" onMouseClicked="#delete1" text="Delete" />
+         </children>
+      </HBox>
+      <HBox fx:id="hBox2" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+         <children>
+            <TextField fx:id="textField2" alignment="CENTER" editable="false" text="Empty" />
+            <Button fx:id="load2" disable="true" mnemonicParsing="false" onMouseClicked="#load2" text="Load" />
+            <Button fx:id="delete2" disable="true" mnemonicParsing="false" onMouseClicked="#delete2" text="Delete" />
+         </children>
+      </HBox>
+      <Button fx:id="back" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onMouseClicked="#mainMenu" text="Return to Main Menu" textAlignment="CENTER">
+         <font>
+            <Font size="15.0" />
+         </font>
+         <VBox.margin>
+            <Insets top="30.0" />
+         </VBox.margin>
+      </Button>
+   </children>
+</VBox>

@@ -1,5 +1,10 @@
 package model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Objects;
 
 /**
@@ -8,6 +13,7 @@ import java.util.Objects;
 public class Position implements Cloneable {
 
     private int row;
+
     private int col;
 
     /**
@@ -16,7 +22,8 @@ public class Position implements Cloneable {
      * @param row the row coordinate of the position
      * @param col the column coordinate of the position
      */
-    public Position(int row, int col) {
+    @JsonCreator
+    public Position(@JsonProperty("row") int row, @JsonProperty("col") int col) {
         this.row = row;
         this.col = col;
     }
@@ -24,6 +31,7 @@ public class Position implements Cloneable {
     /**
      * {@return the row coordinate of the position}
      */
+    @JsonGetter
     public int row() {
         return row;
     }
@@ -31,6 +39,7 @@ public class Position implements Cloneable {
     /**
      * {@return the column coordinate of the position}
      */
+    @JsonGetter
     public int col() {
         return col;
     }
@@ -41,38 +50,11 @@ public class Position implements Cloneable {
      *
      * @param direction a direction that specifies a change in the coordinates
      */
+    @JsonIgnore
     public Position getTarget(Direction direction) {
         return new Position(row + direction.getRowChange(), col + direction.getColChange());
     }
 
-    public Position getUp() {
-        return getTarget(Direction.UP);
-    }
-
-    public Position getRight() {
-        return getTarget(Direction.RIGHT);
-    }
-
-    public Position getDown() {
-        return getTarget(Direction.DOWN);
-    }
-
-    public Position getLeft() {
-        return getTarget(Direction.LEFT);
-    }
-
-    public Position getUpRight() {
-        return getTarget(Direction.UPRIGHT);
-    }
-    public Position getUpLeft() {
-        return getTarget(Direction.UPLEFT);
-    }
-    public Position getDownRight() {
-        return getTarget(Direction.DOWNRIGHT);
-    }
-    public Position getDownLeft() {
-        return getTarget(Direction.DOWNLEFT);
-    }
 
 
     /**
@@ -85,34 +67,6 @@ public class Position implements Cloneable {
         col += direction.getColChange();
     }
 
-    public void setUp() {
-        setTarget(Direction.UP);
-    }
-
-    public void setRight() {
-        setTarget(Direction.RIGHT);
-    }
-
-    public void setDown() {
-        setTarget(Direction.DOWN);
-    }
-
-    public void setLeft() {
-        setTarget(Direction.LEFT);
-    }
-
-    public void setUpRight() {
-        setTarget(Direction.UPRIGHT);
-    }
-    public void setUpLeft() {
-        setTarget(Direction.UPLEFT);
-    }
-    public void setDownRight() {
-        setTarget(Direction.DOWNRIGHT);
-    }
-    public void setDownLeft() {
-        setTarget(Direction.DOWNLEFT);
-    }
 
     @Override
     public boolean equals(Object o) {

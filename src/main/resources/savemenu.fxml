@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SaveMenuController">
+   <children>
+      <HBox fx:id="hBox0" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+         <children>
+            <TextField fx:id="textField1" alignment="CENTER" editable="false" text="Empty" />
+            <Button fx:id="save1" mnemonicParsing="false" onMouseClicked="#saveGame0" text="Save" />
+            <Button fx:id="delete1" disable="true" mnemonicParsing="false" onMouseClicked="#deleteGame0" text="Delete" />
+         </children>
+      </HBox>
+      <HBox fx:id="hBox1" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+         <children>
+            <TextField fx:id="textField2" alignment="CENTER" editable="false" text="Empty" />
+            <Button fx:id="save2" mnemonicParsing="false" onMouseClicked="#saveGame1" text="Save" />
+            <Button fx:id="delete2" disable="true" mnemonicParsing="false" onMouseClicked="#deleteGame1" text="Delete" />
+         </children>
+      </HBox>
+      <HBox fx:id="hBox2" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+         <children>
+            <TextField fx:id="textField3" alignment="CENTER" editable="false" text="Empty" />
+            <Button fx:id="save3" mnemonicParsing="false" onMouseClicked="#saveGame2" text="Save" />
+            <Button fx:id="delete3" disable="true" mnemonicParsing="false" onMouseClicked="#deleteGame2" text="Delete" />
+         </children>
+      </HBox>
+      <Button fx:id="back" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onMouseClicked="#gameReturn" text="Return to the game" textAlignment="CENTER">
+         <font>
+            <Font size="15.0" />
+         </font>
+         <VBox.margin>
+            <Insets top="30.0" />
+         </VBox.margin>
+      </Button>
+   </children>
+</VBox>

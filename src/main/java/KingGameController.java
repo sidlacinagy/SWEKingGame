@@ -20,6 +20,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
@@ -49,23 +50,38 @@ public class KingGameController {
     private List<Position> selectablePositions = new ArrayList<>();
     GameState model = null;
 
-    public void setGameModel(GameState model) {
-        this.model = model;
-    }
 
     @FXML
     private GridPane gridPane;
 
-    private Position selected;
+
 
     @FXML
     private void undo(Event event) throws IOException {
         model.undo();
+        setCurrentTextField();
     }
 
     @FXML
     private void redo(Event event) throws IOException {
         model.redo();
+        setCurrentTextField();
+    }
+
+    @FXML
+    private void mainMenu(Event event) throws IOException {
+        loadMenu();
+    }
+
+    @FXML
+    private void saveGame(Event event) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/savemenu.fxml"));
+        Parent root = fxmlLoader.load();
+        SaveMenuController controller = fxmlLoader.getController();
+        controller.setModel(model);
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
     }
 
     @FXML
@@ -75,13 +91,18 @@ public class KingGameController {
         model = GameState.createNewGame();
         initialize();
     }
+    
+    public void setLoadedGame(GameState gameState){
+        model=gameState;
+        initialize();
+    }
 
     private void initialize() {
         createBoard();
         createPieces();
         showSelectablePositions();
         setSelectablePositions();
-        textField.setText("White to move king");
+        setCurrentTextField();
     }
 
 
@@ -162,51 +183,63 @@ public class KingGameController {
         } else if (model.getMoveIndex() == 1) {
             handleTileClick(position);
         }
+        setCurrentTextField();
+        processIsGoal();
+    }
+
+        private void processIsGoal(){
+            int isGoal = model.isGoal();
+            if (isGoal == 0 || isGoal == 1) {
+                String s = "";
+                if (model.isGoal() == 1) {
+                    try {
+                        handleWin("Black");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else if (model.isGoal() == 0) {
+                    try {
+                        handleWin("White");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+    private void setCurrentTextField (){
         String kingText = "White";
-        String moveText = "move king";
+        String moveText = "move the king";
         if (model.getCurrentPlayer() == 1) {
             kingText = "Black";
         }
         if (model.getMoveIndex() == 1) {
-            moveText = "remove tile";
+            moveText = "remove a tile";
         }
         textField.setText(kingText + " to " + moveText);
-        int isGoal = model.isGoal();
-        if (isGoal == 0 || isGoal == 1) {
-            String s = "";
-            if (model.isGoal() == 1) {
-                try {
-                    handleWin("Black");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else if (model.isGoal() == 0) {
-                try {
-                    handleWin("White");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
     }
 
 
     private void handleWin(String s) throws IOException {
         ButtonType playing = new ButtonType("Keep Playing", ButtonBar.ButtonData.OK_DONE);
-        ButtonType quit = new ButtonType("Quit", ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType quit = new ButtonType("Quit to main menu", ButtonBar.ButtonData.CANCEL_CLOSE);
         textField.setText(s + " wins");
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Quit to main menu?", playing, quit);
-        alert.setContentText(s + " wins");
-        alert.setHeaderText("Quit to main menu?");
-        alert.setTitle("Quit to main menu?");
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, s + " wins", playing, quit);
+        alert.setContentText("Quit to main menu?");
+        alert.setHeaderText(s + " wins");
+        alert.setTitle("Result");
         Optional<ButtonType> result = alert.showAndWait();
         if (quit.equals(result.get())) {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/mainmenu.fxml"));
-            Parent root = fxmlLoader.load();
-            Stage stage = (Stage) gridPane.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.show();
+           loadMenu();
         }
+    }
+
+    private void loadMenu() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/mainmenu.fxml"));
+        Parent root = fxmlLoader.load();
+        Stage stage = (Stage) gridPane.getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
     }
 
     private void handleTileClick(Position position) {
@@ -236,7 +269,6 @@ public class KingGameController {
                 selectionPhase = selectionPhase.alter();
             }
         }
-
     }
 
     private void setSelectablePositions(List<Position> positions) {

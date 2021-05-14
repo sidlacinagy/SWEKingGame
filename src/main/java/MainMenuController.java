@@ -1,4 +1,10 @@
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -38,7 +44,11 @@ public class MainMenuController {
     }
     @FXML
     private void loadGame(Event event) throws IOException {
-
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/loadmenu.fxml"));
+        Parent root = fxmlLoader.load();
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
     }
     @FXML
     private void startGame(Event event) throws IOException {
@@ -53,5 +63,38 @@ public class MainMenuController {
         stage.setScene(new Scene(root));
         stage.show();
 
+    }
+
+    @FXML
+    private void initialize() throws IOException {
+        String dir=System.getProperty("user.home");
+        dir=dir+"/.KingGame";
+        if (!Files.exists(Paths.get(dir))) {
+            Files.createDirectory(Paths.get(dir));
+        }
+        for(int i=0;i<3;i++) {
+            String target=dir;
+            target=target+"/kingGame"+i+".json";
+            if (!Files.exists(Paths.get(target))) {
+                copyJson(target);
+
+            }
+        }
+
+    }
+
+    private void copyJson(String target){
+        String mainPath=null;
+        try {
+            URI uri = getClass().getResource("/kingGame.json").toURI();
+            mainPath = Paths.get(uri).toString();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        try {
+            Files.copy(Paths.get(mainPath), Paths.get(target), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

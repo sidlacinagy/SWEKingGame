@@ -5,14 +5,17 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="KingGameController">
+<VBox fx:id="vBox" alignment="CENTER" minHeight="600.0" prefWidth="1000.0" spacing="20.0" stylesheets="@ui.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="KingGameController">
    <children>
-      <TextField fx:id="textField" alignment="CENTER" editable="false" />
-      <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0">
+      <TextField fx:id="textField" alignment="CENTER" editable="false">
+         <font>
+            <Font size="20.0" />
+         </font></TextField>
+      <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1200.0" spacing="50.0">
          <children>
-            <VBox prefHeight="200.0" prefWidth="100.0" spacing="50.0">
+            <VBox alignment="TOP_CENTER" prefHeight="600.0" prefWidth="229.0" spacing="50.0">
                <children>
-                  <Button fx:id="undo" mnemonicParsing="false" onMouseClicked="#undo" prefHeight="50.0" prefWidth="150.0" text="undo">
+                  <Button alignment="TOP_RIGHT" mnemonicParsing="false" onMouseClicked="#saveGame" text="Save Game">
                      <font>
                         <Font size="24.0" />
                      </font>
@@ -20,7 +23,20 @@
                         <Insets top="30.0" />
                      </VBox.margin>
                   </Button>
-                  <Button fx:id="redo" mnemonicParsing="false" onMouseClicked="#redo" prefHeight="50.0" prefWidth="150.0" text="redo">
+                  <Button fx:id="mainMenu" mnemonicParsing="false" onMouseClicked="#mainMenu" text="Main Menu">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="undo" mnemonicParsing="false" onMouseClicked="#undo" prefHeight="50.0" prefWidth="150.0" text="Undo">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets top="150.0" />
+                     </VBox.margin>
+                  </Button>
+                  <Button fx:id="redo" mnemonicParsing="false" onMouseClicked="#redo" prefHeight="50.0" prefWidth="150.0" text="Redo">
                      <font>
                         <Font size="24.0" />
                      </font>
@@ -30,7 +46,7 @@
                   </Button>
                </children>
                <HBox.margin>
-                  <Insets right="45.0" />
+                  <Insets right="50.0" />
                </HBox.margin>
             </VBox>
             <GridPane fx:id="gridPane" alignment="CENTER">
@@ -57,6 +73,9 @@
                </HBox.margin>
             </GridPane>
          </children>
+         <VBox.margin>
+            <Insets bottom="15.0" />
+         </VBox.margin>
       </HBox>
    </children>
 </VBox>

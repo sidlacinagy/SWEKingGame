@@ -1,15 +1,8 @@
-.square {
+
+.gridPane {
     -fx-border-style: solid;
-}
-
-.selected {
-    -fx-background-color: silver;
-}
-
-.selectable {
-    -fx-border-width: 5;
-}
-
-.square:hover {
-    -fx-background-color: ghostwhite;
+    -fx-border-width: 0.3em;
+    -fx-border-insets: 5;
+    -fx-border-radius: 5;
+    -fx-border-color: black;
 }

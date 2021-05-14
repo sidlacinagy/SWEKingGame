@@ -1,5 +1,7 @@
 package model;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 
 /**
@@ -15,11 +17,12 @@ public class King {
      * {@return the position of the king}
      * @return
      */
-
+    @JsonIgnore
     public ReadOnlyObjectWrapper<Position> getPositionWrapped() {
         return position;
     }
 
+    @JsonGetter
     public Position getPosition() {
         return position.get();
     }
@@ -37,6 +40,7 @@ public class King {
     public King(Position position) {
         this.position=new ReadOnlyObjectWrapper<>(position);
     }
+
 
     /**
      * Creates a {@code state.King} object.
