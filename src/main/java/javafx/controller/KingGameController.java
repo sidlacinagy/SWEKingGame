@@ -1,30 +1,29 @@
+package javafx.controller;
+
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Stack;
 
-import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 import model.GameState;
 import model.King;
@@ -140,14 +139,21 @@ public class KingGameController {
 
     private void createPieces() {
         model.getBlackKing().getPositionWrapped().addListener(this::piecePositionChange);
-        Font font = new Font(50);
-        Label blackKing = new Label("\u265A");
-        blackKing.setFont(font);
+        ImageView blackKing= null;
+        try {
+            blackKing = new ImageView(new Image(String.valueOf(getClass().getResource("/blackKing.png").toURI())));
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
         getSquare(model.getBlackKing().getPosition()).getChildren().add(blackKing);
 
+        ImageView whiteKing= null;
+        try {
+            whiteKing = new ImageView(new Image(String.valueOf(getClass().getResource("/whiteKing.png").toURI())));
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
         model.getWhiteKing().getPositionWrapped().addListener(this::piecePositionChange);
-        Label whiteKing = new Label("\u2654");
-        whiteKing.setFont(font);
         getSquare(model.getWhiteKing().getPosition()).getChildren().add(whiteKing);
 
 
@@ -229,7 +235,7 @@ public class KingGameController {
         alert.setHeaderText(s + " wins");
         alert.setTitle("Result");
         Optional<ButtonType> result = alert.showAndWait();
-        if (quit.equals(result.get())) {
+        if (result.isPresent() && quit.equals(result.get())) {
            loadMenu();
         }
     }
