@@ -29,7 +29,7 @@ public class Position implements Cloneable {
     }
 
     /**
-     * {@return the row coordinate of the position}
+     * @return Returns the row coordinate of the position.
      */
     @JsonGetter
     public int row() {
@@ -37,7 +37,7 @@ public class Position implements Cloneable {
     }
 
     /**
-     * {@return the column coordinate of the position}
+     * @return Returns the column coordinate of the position.
      */
     @JsonGetter
     public int col() {
@@ -45,8 +45,8 @@ public class Position implements Cloneable {
     }
 
     /**
-     * {@return the position whose vertical and horizontal distances from this
-     * position are equal to the coordinate changes of the direction given}
+     * @return Returns the position whose vertical and horizontal distances from this
+     * position are equal to the coordinate changes of the direction given.
      *
      * @param direction a direction that specifies a change in the coordinates
      */

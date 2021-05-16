@@ -250,20 +250,31 @@ public class KingGameController {
 
     private void handleWin(String s,int winningPlayerIndex) throws IOException {
         int diff=setPoints(winningPlayerIndex);
-        String headerText=whiteName+"+"+diff+"\n"+blackName+"-"+diff;
-        ImageView winner = null;
-        try {
-            winner = new ImageView(new Image(String.valueOf(getClass().getResource("/whiteKing.png").toURI())));
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
+        String headerText;
+
+        if(winningPlayerIndex==0){
+        headerText=whiteName+"+"+diff+"\n"+blackName+"-"+diff;
         }
-        if (s.equals("Black")) {
+
+        else{
+            headerText=whiteName+"-"+diff+"\n"+blackName+"+"+diff;
+        }
+
+        ImageView winner = null;
+        if (winningPlayerIndex==0) {
+            try {
+                winner = new ImageView(new Image(String.valueOf(getClass().getResource("/whiteKing.png").toURI())));
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+        }
+        if (winningPlayerIndex==1) {
             try {
                 winner = new ImageView(new Image(String.valueOf(getClass().getResource("/blackKing.png").toURI())));
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             }
-            headerText=whiteName+"-"+diff+"\n"+blackName+"+"+diff;
+
         }
         Logger.debug(s+" wins");
         ButtonType playing = new ButtonType("Keep Playing", ButtonBar.ButtonData.OK_DONE);
@@ -290,12 +301,8 @@ public class KingGameController {
             e.printStackTrace();
         }
 
-        if(map.get(whiteName)==null){
-            map.put(whiteName,1000);
-        }
-        if(map.get(blackName)==null){
-            map.put(blackName,1000);
-        }
+        map.putIfAbsent(whiteName, 1000);
+        map.putIfAbsent(blackName, 1000);
         int whitePoint=(int)map.get(whiteName);
         int blackPoint=(int)map.get(blackName);
         int sum=whitePoint+blackPoint;

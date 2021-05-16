@@ -24,21 +24,21 @@ public enum Direction {
     }
 
     /**
-     * {@return the change in the row coordinate when moving to the direction}
+     * @return Returns the change in the row coordinate when moving to the direction.
      */
     public int getRowChange() {
         return rowChange;
     }
 
     /**
-     * {@return the change in the column coordinate when moving to the direction}
+     * @return Return the change in the column coordinate when moving to the direction.
      */
     public int getColChange() {
         return colChange;
     }
 
     /**
-     * {@return the direction that corresponds to the coordinate changes specified}
+     * @return Returns the direction that corresponds to the coordinate changes specified.
      *
      * @param rowChange the change in the row coordinate
      * @param colChange the change in the column coordinate

@@ -17,7 +17,7 @@
             <Font size="20.0" />
          </font>
       </TextField>
-      <TextField fx:id="textFieldBlack" prefWidth="250.0">
+      <TextField fx:id="textFieldBlack" alignment="CENTER" prefWidth="250.0">
          <font>
             <Font size="20.0" />
          </font>
