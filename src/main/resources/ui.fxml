@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox fx:id="vBox" alignment="CENTER" minHeight="600.0" prefWidth="1000.0" spacing="20.0" stylesheets="@ui.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafx.controller.KingGameController">
+<VBox fx:id="vBox" alignment="CENTER" minHeight="600.0" prefWidth="1000.0" spacing="20.0" stylesheets="ui.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafx.controller.KingGameController">
    <children>
       <TextField fx:id="textField" alignment="CENTER" editable="false">
          <font>

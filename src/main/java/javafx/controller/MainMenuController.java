@@ -1,5 +1,7 @@
 package javafx.controller;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -17,12 +19,14 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import org.tinylog.Logger;
 
 public class MainMenuController {
 
     @FXML
     private void quitGame(Event event) throws IOException {
         Platform.exit();
+        Logger.debug("Exiting");
     }
     @FXML
     private void loadGame(Event event) throws IOException {
@@ -31,19 +35,16 @@ public class MainMenuController {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.setScene(new Scene(root));
         stage.show();
+        Logger.debug("Loading screen loaded");
     }
     @FXML
     private void startGame(Event event) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ui.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/nameGetter.fxml"));
         Parent root = fxmlLoader.load();
-        KingGameController controller = fxmlLoader.getController();
-        controller.setNewGame();
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-        stage.setX((screenBounds.getWidth() - 1200) / 2);
-        stage.setY((screenBounds.getHeight() - 800) / 2);
         stage.setScene(new Scene(root));
         stage.show();
+        Logger.debug("Getting names...");
 
     }
 
@@ -58,17 +59,24 @@ public class MainMenuController {
             String target=dir;
             target=target+"/kingGame"+i+".json";
             if (!Files.exists(Paths.get(target))) {
-                copyJson(target);
+                copyJson("/kingGame.json",target);
 
             }
+        }
+        String pointsLocation=dir+"/points.json";
+        if (!Files.exists(Paths.get(pointsLocation))){
+            Files.createFile(Paths.get(pointsLocation));
+            FileWriter myWriter = new FileWriter(pointsLocation);
+            myWriter.write("{}");
+            myWriter.close();
         }
 
     }
 
-    private void copyJson(String target){
+    private void copyJson(String source, String target){
         String mainPath=null;
         try {
-            URI uri = getClass().getResource("/kingGame.json").toURI();
+            URI uri = getClass().getResource(source).toURI();
             mainPath = Paths.get(uri).toString();
         } catch (URISyntaxException e) {
             e.printStackTrace();

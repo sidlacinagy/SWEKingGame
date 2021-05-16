@@ -1,6 +1,5 @@
 package javafx.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -20,12 +19,11 @@ import model.GameState;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.tinylog.Logger;
 
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -46,9 +44,17 @@ public class SaveMenuController {
 
     private GameState model=null;
 
+    private boolean isSaved=false;
+
+    private String whiteName=null;
+
+    private String blackName=null;
+
     private GameState[] gameStates=new GameState[3];
 
-    public void setModel(GameState gameState){
+    public void setModel(GameState gameState,String whiteName,String blackName){
+        this.whiteName=whiteName;
+        this.blackName=blackName;
         model=gameState;
         initialize();
     }
@@ -62,7 +68,7 @@ public class SaveMenuController {
     private Map<Integer,String> getOccupiedIndexes() {
         Map<Integer, String> values = new HashMap<>();
         for (int i = 0; i < 3; i++) {
-            JsonNode jsonNode = getJsonNode(i);
+            JsonNode jsonNode = JsonReader.getSaveGameJsonNode(i);
 
             if (!jsonNode.get("isEmpty").asBoolean()) {
                 values.put(i, jsonNode.get("time").asText());
@@ -71,28 +77,8 @@ public class SaveMenuController {
         return values;
     }
 
-    private JsonNode getJsonNode(int index){
-        JsonNode jsonNode=null;
-        String content=getJsonAsString(index);
-        try {
-            jsonNode = OBJECT_MAPPER.readTree(content);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
 
-        return jsonNode;
-    }
 
-    private String getJsonAsString(int index){
-        String filePath=System.getProperty("user.home")+"/.KingGame/kingGame"+index+".json";
-        String content = null;
-        try {
-            content = new String (Files.readAllBytes( Paths.get(filePath) ) );
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return content;
-    }
 
 
     private void setButtons(Map<Integer,String> values){
@@ -145,7 +131,7 @@ public class SaveMenuController {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ui.fxml"));
         Parent root = fxmlLoader.load();
         KingGameController controller = fxmlLoader.getController();
-        controller.setLoadedGame(model);
+        controller.setLoadedGame(model,isSaved,whiteName,blackName);
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
         stage.setX((screenBounds.getWidth() - 1200) / 2);
@@ -155,40 +141,43 @@ public class SaveMenuController {
     }
 
     private void saveGame(int index){
-        JsonNode jsonNode=getJsonNode(index);
+        JsonNode jsonNode= JsonReader.getSaveGameJsonNode(index);
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         LocalDateTime now = LocalDateTime.now();
         ((ObjectNode)jsonNode).put("time", dtf.format(now));
         ((ObjectNode)jsonNode).put("isEmpty",false);
-        ObjectMapper mapper = new ObjectMapper();
+        ((ObjectNode)jsonNode).put("whiteName",whiteName);
+        ((ObjectNode)jsonNode).put("blackName",blackName);
         String jsonStr=null;
         try {
-            jsonStr = mapper.writeValueAsString(model);
+            jsonStr = OBJECT_MAPPER.writeValueAsString(model);
         }
         catch (IOException e) {
             e.printStackTrace();
         }
         ((ObjectNode)jsonNode).put("GameState",jsonStr);
-        ObjectWriter writer = mapper.writer(new DefaultPrettyPrinter());
+        ObjectWriter writer = OBJECT_MAPPER.writer(new DefaultPrettyPrinter());
         try {
             writer.writeValue(new File(System.getProperty("user.home")+"/.KingGame/kingGame"+index+".json"), jsonNode);
         } catch (IOException e) {
             e.printStackTrace();
         }
         initialize();
+        isSaved=true;
+        Logger.debug("Saved the "+index+". game");
     }
 
     private void deleteGame(int index){
-        JsonNode jsonNode=getJsonNode(index);
+        JsonNode jsonNode= JsonReader.getSaveGameJsonNode(index);
         ((ObjectNode)jsonNode).put("isEmpty",true);
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectWriter writer = mapper.writer(new DefaultPrettyPrinter());
+        ObjectWriter writer = OBJECT_MAPPER.writer(new DefaultPrettyPrinter());
         try {
             writer.writeValue(new File(System.getProperty("user.home")+"/.KingGame/kingGame"+index+".json"), jsonNode);
         } catch (IOException e) {
             e.printStackTrace();
         }
         initialize();
+        Logger.debug("Deleted the "+index+". game");
     }
 
 

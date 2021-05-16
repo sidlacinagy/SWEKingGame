@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="TOP_CENTER" fillWidth="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="300.0" spacing="80.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafx.controller.NameGetterController">
+   <children>
+      <TextField alignment="CENTER" editable="false" text="Enter the names">
+         <font>
+            <Font size="25.0" />
+         </font>
+      </TextField>
+      <TextField fx:id="textFieldWhite" alignment="CENTER" prefWidth="200.0">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </TextField>
+      <TextField fx:id="textFieldBlack" prefWidth="200.0">
+         <font>
+            <Font size="20.0" />
+         </font>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
+      </TextField>
+      <Button fx:id="button" mnemonicParsing="false" onMouseClicked="#startGame" prefWidth="100.0" text="Start">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Button>
+   </children>
+</VBox>

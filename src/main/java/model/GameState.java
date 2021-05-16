@@ -4,9 +4,6 @@ import java.util.*;
 
 
 import com.fasterxml.jackson.annotation.*;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 
@@ -50,17 +47,17 @@ public class GameState {
     private King whiteKing;
     @JsonProperty("blackKingPos")
     private King blackKing;
-    @JsonProperty("tiles")
+
     private ReadOnlyObjectWrapper<SquareStatus>[][] tiles;
-    @JsonProperty("undoStack")
+
     private Stack<Position> undoStack;
-    @JsonProperty("redoStack")
+
     private Stack<Position> redoStack;
 
     public int getMoveIndex() {
         return moveIndex;
     }
-    @JsonProperty("moveIndex")
+
     public void setMoveIndex(int moveIndex) {
         this.moveIndex=moveIndex;
     }
@@ -68,7 +65,7 @@ public class GameState {
     public int getCurrentPlayer() {
         return currentPlayer;
     }
-    @JsonProperty("currentPlayer")
+
     public void setCurrentPlayer(int currentPlayer) {
         this.currentPlayer=currentPlayer;
     }
@@ -125,8 +122,8 @@ public class GameState {
     public ReadOnlyObjectWrapper<SquareStatus>[][] getTilesWrapped(){
         return tiles;
     }
-    @JsonProperty("tiles")
-    @JsonSetter
+
+
     public void setTiles(SquareStatus[][] tiles) {
         for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles[0].length; j++) {
@@ -142,7 +139,7 @@ public class GameState {
     public Stack<Position> getUndoStack() {
         return undoStack;
     }
-    @JsonProperty("undoStack")
+
     public void setUndoStack(Stack<Position> undoStack) {
         this.undoStack = undoStack;
     }
@@ -150,7 +147,7 @@ public class GameState {
     public Stack<Position> getRedoStack() {
         return redoStack;
     }
-    @JsonProperty("redoStack")
+
     public void setRedoStack(Stack<Position> redoStack) {
         this.redoStack = redoStack;
     }
