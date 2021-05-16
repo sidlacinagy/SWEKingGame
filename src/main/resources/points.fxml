@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="CENTER" prefHeight="400.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafx.controller.PointsMenuController">
+         <children>
+              <TableView fx:id="tableView">
+                  <columns>
+                      <TableColumn fx:id="name" editable="false" prefWidth="75.0" text="Name" />
+                      <TableColumn fx:id="point" editable="false" prefWidth="75.0" text="Point" />
+                  </columns>
+                  <columnResizePolicy>
+                      <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                  </columnResizePolicy>
+              </TableView>
+      <Button fx:id="mainMenu" alignment="CENTER" mnemonicParsing="false" onMouseClicked="#mainMenu" text="Return to main menu">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
+         </children>
+</VBox>

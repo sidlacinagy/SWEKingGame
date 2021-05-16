@@ -9,7 +9,7 @@
          <children>
             <Button fx:id="startGame" mnemonicParsing="false" onMouseClicked="#startGame" prefHeight="50.0" prefWidth="150.0" text="New Game" textAlignment="CENTER" />
             <Button fx:id="loadGame" mnemonicParsing="false" onMouseClicked="#loadGame" prefHeight="50.0" prefWidth="150.0" text="Load Game" />
-            <Button fx:id="points" mnemonicParsing="false" onMouseClicked="#loadGame" prefHeight="50.0" prefWidth="150.0" text="Points" />
+            <Button fx:id="points" mnemonicParsing="false" onMouseClicked="#loadPoints" prefHeight="50.0" prefWidth="150.0" text="Points" />
             <Button fx:id="quitGame" mnemonicParsing="false" onMouseClicked="#quitGame" prefHeight="50.0" prefWidth="150.0" text="Quit Game" />
          </children>
       </VBox>

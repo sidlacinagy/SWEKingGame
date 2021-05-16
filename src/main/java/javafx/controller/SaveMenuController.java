@@ -60,6 +60,7 @@ public class SaveMenuController {
     }
 
     private void initialize() {
+
         Map<Integer,String> values=getOccupiedIndexes();
         setButtons(values);
 

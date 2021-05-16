@@ -15,6 +15,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -58,6 +60,8 @@ public class KingGameController {
     private GameState model = null;
     private String whiteName=null;
     private String blackName=null;
+    private StringProperty kingColor=new ReadOnlyStringWrapper();
+    private StringProperty nextMoveName=new ReadOnlyStringWrapper();
 
     @FXML
     private TextField textField;
@@ -66,17 +70,18 @@ public class KingGameController {
     private GridPane gridPane;
 
 
+
     @FXML
     private void undo(Event event) throws IOException {
         model.undo();
-        setCurrentTextField();
+
         Logger.debug("Applied undo");
     }
 
     @FXML
     private void redo(Event event) throws IOException {
         model.redo();
-        setCurrentTextField();
+
         Logger.debug("Applied redo");
     }
 
@@ -132,8 +137,10 @@ public class KingGameController {
     private void initialize() {
         createBoard();
         createPieces();
-        setCurrentTextField();
         gridPane.getStyleClass().add("gridPane");
+        kingColor.bind(Bindings.when(model.getCurrentPlayerProperty().isEqualTo(0)).then("White").otherwise("Black"));
+        nextMoveName.bind(Bindings.when(model.getMoveIndexProperty().isEqualTo(0)).then("move the king").otherwise("remove a tile"));
+        textField.textProperty().bind(Bindings.concat(kingColor).concat(" to ").concat(nextMoveName));
     }
 
 
@@ -215,7 +222,6 @@ public class KingGameController {
         } else if (model.getMoveIndex() == 1) {
             handleTileClick(position);
         }
-        setCurrentTextField();
         processIsGoal();
     }
 
@@ -239,17 +245,7 @@ public class KingGameController {
         }
     }
 
-    private void setCurrentTextField() {
-        String kingText = "White";
-        String moveText = "move the king";
-        if (model.getCurrentPlayer() == 1) {
-            kingText = "Black";
-        }
-        if (model.getMoveIndex() == 1) {
-            moveText = "remove a tile";
-        }
-        textField.setText(kingText + " to " + moveText);
-    }
+
 
 
     private void handleWin(String s,int winningPlayerIndex) throws IOException {
@@ -272,13 +268,11 @@ public class KingGameController {
         Logger.debug(s+" wins");
         ButtonType playing = new ButtonType("Keep Playing", ButtonBar.ButtonData.OK_DONE);
         ButtonType quit = new ButtonType("Quit to main menu", ButtonBar.ButtonData.CANCEL_CLOSE);
-        textField.setText(s + " wins");
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION, s + " wins", playing, quit);
         alert.setContentText("Quit to main menu?");
         alert.setHeaderText(headerText);
         alert.setTitle(s + " wins");
         alert.setGraphic(winner);
-        Logger.debug(s+" wins");
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && quit.equals(result.get())) {
             loadMenu();
@@ -305,17 +299,17 @@ public class KingGameController {
         int whitePoint=(int)map.get(whiteName);
         int blackPoint=(int)map.get(blackName);
         int sum=whitePoint+blackPoint;
-        float blackRatio=sum/blackPoint;
-        float whiteRatio=sum/whitePoint;
+        float blackRatio=(float)blackPoint/sum;
+        float whiteRatio=(float)whitePoint/sum;
         int diff=0;
         if(winningPlayerIndex==0){
-            diff= (int) ((blackPoint/20)*blackRatio);
+            diff= (int) ((50)*blackRatio);
             map.replace(whiteName,whitePoint+diff);
             map.replace(blackName,blackPoint-diff);
         }
 
         if(winningPlayerIndex==1){
-            diff= (int) ((whitePoint/20)*whiteRatio);
+            diff= (int) ((50)*whiteRatio);
             map.replace(whiteName,whitePoint-diff);
             map.replace(blackName,blackPoint+diff);
         }

@@ -5,9 +5,6 @@ package model;
  */
 public enum SquareStatus {
 
-
-
     EMPTY,REMOVED
-
 
 }

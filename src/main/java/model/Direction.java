@@ -1,10 +1,10 @@
 package model;
-
+/**
+ * Represents the eight main directions.
+ */
 public enum Direction {
 
-    /**
-     * Represents the eight main directions.
-     */
+
 
     UP(-1, 0),
     RIGHT(0, 1),

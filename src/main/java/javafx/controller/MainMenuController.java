@@ -49,6 +49,17 @@ public class MainMenuController {
     }
 
     @FXML
+    private void loadPoints(Event event)throws IOException{
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/points.fxml"));
+        Parent root = fxmlLoader.load();
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
+        Logger.debug("Loading leaderboards");
+
+    }
+
+    @FXML
     private void initialize() throws IOException {
         String dir=System.getProperty("user.home");
         dir=dir+"/.KingGame";
@@ -59,7 +70,10 @@ public class MainMenuController {
             String target=dir;
             target=target+"/kingGame"+i+".json";
             if (!Files.exists(Paths.get(target))) {
-                copyJson("/kingGame.json",target);
+                Files.createFile(Paths.get(target));
+                FileWriter myWriter = new FileWriter(target);
+                myWriter.write("{ \"isEmpty\": true}");
+                myWriter.close();
 
             }
         }

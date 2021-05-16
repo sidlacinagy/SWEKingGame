@@ -48,6 +48,7 @@ public class LoadMenuController {
 
     @FXML
     private HBox hBox2;
+
     @FXML
     private void initialize() {
         Map<Integer,String> values=getOccupiedIndexes();
