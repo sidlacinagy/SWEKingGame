@@ -134,9 +134,9 @@ public class SaveMenuController {
         KingGameController controller = fxmlLoader.getController();
         controller.setLoadedGame(model,isSaved,whiteName,blackName);
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-        stage.setX((screenBounds.getWidth() - 1200) / 2);
-        stage.setY((screenBounds.getHeight() - 800) / 2);
+        stage.setX(600);
+        stage.setY(1000);
+        stage.setResizable(true);
         stage.setScene(new Scene(root));
         stage.show();
     }

@@ -49,9 +49,9 @@ public class NameGetterController {
             KingGameController controller = fxmlLoader.getController();
             controller.setNewGame(textFieldWhite.getText(),textFieldBlack.getText());
             Stage stage = (Stage) textFieldBlack.getScene().getWindow();
-            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-            stage.setX((screenBounds.getWidth() - 1200) / 2);
-            stage.setY((screenBounds.getHeight() - 800) / 2);
+            stage.setX(600);
+            stage.setY(1000);
+            stage.setResizable(true);
             stage.setScene(new Scene(root));
             stage.show();
             Logger.debug("New Game loaded");
