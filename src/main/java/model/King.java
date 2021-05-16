@@ -14,14 +14,14 @@ public class King {
     private ReadOnlyObjectWrapper<Position> position;
 
     /**
-     * @return Returns the wrapped position of the king.
+     * @return the wrapped position of the king.
      */
     @JsonIgnore
     public ReadOnlyObjectWrapper<Position> getPositionWrapped() {
         return position;
     }
     /**
-     * @return Returns the position of the king.
+     * @return the position of the king.
      */
     @JsonGetter
     public Position getPosition() {

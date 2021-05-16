@@ -198,7 +198,7 @@ public class GameState {
     /**
      * Creates a {@code GameState} object with the starting positions.
      *
-     * @return Returns the generated object.
+     * @return the generated object.
      */
 
     public static GameState createNewGame() {
@@ -210,7 +210,7 @@ public class GameState {
     /**
      * Creates a 2d array of EMPTY tiles with the given length, height.
      *
-     * @return Returns the generated object.
+     * @return the generated object.
      */
 
     public static SquareStatus[][] createEmptyTiles() {
@@ -239,7 +239,7 @@ public class GameState {
 
     /**
      * @param position the position where the state.King will be moved or where the tile will be removed.
-     * @return Returns -1 if the Operator could not be applied, 1 if was successful.
+     * @return -1 if the Operator could not be applied, 1 if it was successful.
      */
 
     public int applyOperator(Position position) {
@@ -317,7 +317,7 @@ public class GameState {
     /**
      * Sets the new {@code GameState} object with the new locations.
      *
-     * @return Returns the past {@code Position} of the king.
+     * @return the past {@code Position} of the king.
      * @param position the position where the king will be moved.
      *
      */
@@ -337,8 +337,8 @@ public class GameState {
     }
 
     /**
+     * Sets the new {@code GameState} object with the new tiles.
      * @param position the position where the tile will be removed.
-     *                 Sets the new {@code GameState} object with the new tiles.
      */
     public void applyTileRemove(Position position) {
         this.setTile(position.row(), position.col(), SquareStatus.REMOVED);
@@ -348,7 +348,7 @@ public class GameState {
 
     /**
      * @param goalPosition the position of the operator.
-     * @return Returns whether the given {@code Position} could be applied in the current {@code GameState}.
+     * @return whether the given {@code Position} could be applied in the current {@code GameState}.
      */
 
     public boolean isAppliable(Position goalPosition) {
@@ -377,7 +377,7 @@ public class GameState {
     /**
      * @param currentKingPosition the position of the king that will be moved.
      * @param goalPosition        the position where the king will be moved.
-     * @return Returns whether the king could be moved to the given location.
+     * @return whether the king could be moved to the given location.
      */
 
     public boolean isKingMoveAppliable(Position currentKingPosition, Position goalPosition) {
@@ -387,7 +387,7 @@ public class GameState {
 
     /**
      * @param goalPosition the position, that will be analyzed.
-     * @return Return true, if the position is on the board, if not returns false.
+     * @return true, if the position is on the board, if not returns false.
      */
 
     public boolean isInPlayField(Position goalPosition) {
@@ -398,7 +398,7 @@ public class GameState {
     /**
      * @param currentKingPosition the current position of the king that will be moved.
      * @param goalPosition        the position where the king will be moved.
-     * @return Returns true if the 2 positions are neighbours false, if not.
+     * @return true if the 2 positions are neighbours false, if not.
      */
 
     public static boolean isNeighbour(Position currentKingPosition, Position goalPosition) {
@@ -412,7 +412,7 @@ public class GameState {
 
     /**
      * @param goalPosition the position, that will be analyzed.
-     * @return Returns true if the given position does not contains any king, and is empty, else returns false.
+     * @return true if the given position does not contains any king, and is empty, else returns false.
      */
 
     public boolean isEmpty(Position goalPosition) {
@@ -449,7 +449,7 @@ public class GameState {
     }
 
     /**
-     * @return Returns -1 if it is not a goal state, 0 or 1 depending on which player have won. 0 if white, 1 if black.
+     * @return -1 if it is not a goal state, 0 or 1 depending on which player have won. 0 if white, 1 if black.
      */
 
     public int isGoal() {
@@ -472,7 +472,7 @@ public class GameState {
 
     /**
      * @param king the king that will be analyzed.
-     * @return Returns true, if the king can move, returns false if not.
+     * @return true, if the king can move, returns false if not.
      */
 
     public boolean canKingMove(King king) {
@@ -484,7 +484,7 @@ public class GameState {
     /**
      *
      * @param king the king that will be analyzed.
-     * @return Returns a {@code List} that contains all the positions where the king could move.
+     * @return a {@code List} that contains all the positions where the king could move.
      */
     public List<Position> getAppliablePositions(King king) {
 
@@ -501,7 +501,7 @@ public class GameState {
     }
 
     /**
-     * @return Returns true, if the {@code GameState} is a valid state, else returns false.
+     * @return true, if the {@code GameState} is a valid state, else returns false.
      */
     @JsonIgnore
     public boolean isValidGameState() {
@@ -537,7 +537,7 @@ public class GameState {
 
     /**
      * @param tiles the 2d board
-     * @return Returns the number of {@code SquareStatus.REMOVED} tiles on the board
+     * @return the number of {@code SquareStatus.REMOVED} tiles on the board
      */
     public static int countRemovedSquares(SquareStatus[][] tiles) {
         int count = 0;

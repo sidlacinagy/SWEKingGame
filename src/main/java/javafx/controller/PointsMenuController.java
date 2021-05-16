@@ -14,6 +14,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import org.tinylog.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,10 +31,10 @@ public class PointsMenuController {
     private TableView tableView;
 
     @FXML
-    private TableColumn<Map.Entry<String, Integer>, String> name;
+    private TableColumn<NamePoints, String> name;
 
     @FXML
-    private TableColumn<Map.Entry<String, Integer>, Integer> point;
+    private TableColumn<NamePoints, Integer> point;
 
 
 
@@ -46,6 +47,7 @@ public class PointsMenuController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Logger.debug("Loading main menu");
         Stage stage = (Stage) tableView.getScene().getWindow();
         stage.setScene(new Scene(root));
         stage.show();
